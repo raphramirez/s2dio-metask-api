@@ -1,8 +1,9 @@
 using System;
+using Domain;
 
-namespace Domain
+namespace Application.Tasks
 {
-    public class Task
+    public class TaskDto
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -12,9 +13,9 @@ namespace Domain
         public bool IsCompleted { get; set; }
 
         // Assignee
-        public AppUser Assignee { get; set; }
+        public string Assignee { get; set; }
 
         // Created By
-        public AppUser Creator { get; set; }
+        public string CreatedBy { get; set; }
     }
 }
