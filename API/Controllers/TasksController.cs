@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Tasks;
@@ -5,12 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class TasksController : BaseApiController
+  public class TasksController : BaseApiController
+  {
+    [HttpGet]
+    public async Task<IActionResult> GetTasks()
     {
-        [HttpGet]
-        public async Task<ActionResult<List<Domain.Task>>> GetTaskAsync()
-        {
-            return await Mediator.Send(new List.Query());
-        }
+      return HandleResult(await Mediator.Send(new List.Query()));
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetTask(Guid id)
+    {
+      return HandleResult(await Mediator.Send(new Details.Query { Id = id }));
+    }
+  }
 }
