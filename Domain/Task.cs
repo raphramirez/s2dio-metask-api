@@ -10,13 +10,15 @@ namespace Domain
         public DateTime Date { get; set; }
         public DateTime DateCreated { get; set; }
         public bool IsCompleted { get; set; }
+        public string Assignee { get; set; }
+        public string CreatedBy { get; set; }
 
         // Assignee
-        public Guid AssigneeId { get; set; }
-        public AppUser Assignee { get; set; }
+        // public Guid AssigneeId { get; set; }
+        // public AppUser Assignee { get; set; }
 
-        // Created By
-        public Guid CreatorId { get; set; }
-        public AppUser Creator { get; set; }
+        // // Created By
+        // public Guid CreatorId { get; set; }
+        // public AppUser Creator { get; set; }
     }
 }

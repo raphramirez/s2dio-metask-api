@@ -1,12 +1,18 @@
+using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
 
 namespace Domain
 {
-    public class AppUser : IdentityUser
+    public class AppUser
     {
+        public Guid Id { get; set; }
         public string DisplayName { get; set; }
 
-        public ICollection<Task> Tasks { get; set; }
+        public string UserName { get; set; }
+
+        // public Guid AssignedTaskId { get; set; }
+        // public Task AssignedTask { get; set; }
+
+        // public ICollection<Task> Tasks { get; set; } = new List<Task>();
     }
 }
