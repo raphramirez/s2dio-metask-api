@@ -12,16 +12,24 @@ namespace Persistence
 
     public DbSet<Task> Tasks { get; set; }
     public DbSet<AppUser> AppUsers { get; set; }
+    public DbSet<UserTask> UserTasks { get; set; }
 
-    // protected override void OnModelCreating (ModelBuilder modelBuilder) 
-    // {
-    //   // var task = modelBuilder.Entity<Task>();
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+      base.OnModelCreating(builder);
 
-    //   // task.HasOne(t => t.Creator).WithMany(c => c.Tasks).HasForeignKey(t => t.CreatorId);
+      // set the primary key
+      builder.Entity<UserTask>(x => x.HasKey(ut => new { ut.AppUserId, ut.TaskId }));
 
-    //   // var user = modelBuilder.Entity<AppUser>();
+      builder.Entity<UserTask>()
+        .HasOne(u => u.AppUser)
+        .WithMany(t => t.Tasks)
+        .HasForeignKey(ut => ut.AppUserId);
 
-    //   // user.HasOne(u => u.AssignedTask).WithOne(a => a.Assignee).HasForeignKey<AppUser>(x => x.AssignedTaskId);
-    // }
+      builder.Entity<UserTask>()
+        .HasOne(u => u.Task)
+        .WithMany(t => t.Assignees)
+        .HasForeignKey(ut => ut.TaskId);
+    }
   }
 }

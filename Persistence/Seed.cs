@@ -44,41 +44,25 @@ namespace Persistence
                     {
                         Name = "Task 1",
                         Description = "test description",
-                        Date = DateTime.Now.AddDays(1),
-                        DateCreated = DateTime.Now,
-                        IsCompleted = false,
                         CreatedBy = "Raph",
-                        Assignee = "Hanz",
                     },
                     new Domain.Task
                     {
                         Name = "Task 2",
                         Description = "test description",
-                        Date = DateTime.Now.AddDays(2),
-                        DateCreated = DateTime.Now,
-                        IsCompleted = false,
                         CreatedBy = "Raph",
-                        Assignee = "Russel",
                     },
                     new Domain.Task
                     {
                         Name = "Task 3",
                         Description = "test description",
-                        Date = DateTime.Now.AddDays(3),
-                        DateCreated = DateTime.Now,
-                        IsCompleted = false,
                         CreatedBy = "Raph",
-                        Assignee = "Gen",
                     },
                     new Domain.Task
                     {
                         Name = "Task 4",
                         Description = "test description",
-                        Date = DateTime.Now.AddDays(4),
-                        DateCreated = DateTime.Now,
-                        IsCompleted = false,
                         CreatedBy = "Raph",
-                        Assignee = "Jhie",
                     },
                 };
 
