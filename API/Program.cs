@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain;
@@ -19,6 +20,7 @@ namespace API
     public static async System.Threading.Tasks.Task Main(string[] args)
     {
       var host = CreateHostBuilder(args).Build();
+
       using var scope = host.Services.CreateScope();
       var services = scope.ServiceProvider;
 
@@ -43,7 +45,11 @@ namespace API
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
+              webBuilder.UseKestrel();
+              webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
+              webBuilder.UseIISIntegration();
               webBuilder.UseStartup<Startup>();
+              webBuilder.UseUrls("http://*:60001");
             });
   }
 }
