@@ -11,8 +11,7 @@ namespace Persistence
     {
         public static async System.Threading.Tasks.Task SeedData (DataContext context, UserManager<AppUser> userManager)
         {
-
-            if (!userManager.Users.Any())
+            if (!context.Tasks.Any() && !userManager.Users.Any())
             {
                 var users = new List<AppUser>
                 {
@@ -34,17 +33,23 @@ namespace Persistence
                 {
                     await userManager.CreateAsync(user, "Pa$$w0rd");
                 }
-            }
 
-            if (context.Tasks.Any()) return;
-
-            var tasks = new List<Domain.Task>
+                var tasks = new List<Domain.Task>
                 {
                     new Domain.Task
                     {
                         Name = "Task 1",
                         Description = "test description",
                         CreatedBy = "Raph",
+                        Assignees = new List<UserTask>
+                        {
+                            new UserTask
+                            {
+                                AppUser = users[1],
+                                Date = DateTime.Now.AddDays(2),
+                                DateCreated = DateTime.Now,
+                            }
+                        }
                     },
                     new Domain.Task
                     {
@@ -68,6 +73,7 @@ namespace Persistence
 
                 await context.Tasks.AddRangeAsync(tasks);
                 await context.SaveChangesAsync();
+            }
         }
     }
 }
