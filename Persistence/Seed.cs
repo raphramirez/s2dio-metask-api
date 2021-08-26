@@ -48,13 +48,7 @@ namespace Persistence
                                 AppUser = users[1],
                                 Date = DateTime.Now.AddDays(2),
                                 DateCreated = DateTime.Now,
-                            },
-                            new UserTask
-                            {
-                                AppUser = users[2],
-                                Date = DateTime.Now.AddDays(3),
-                                DateCreated = DateTime.Now,
-                            },
+                            }
                         }
                     },
                     new Domain.Task

@@ -32,29 +32,9 @@ namespace Application.Tasks
           .ThenInclude(u => u.AppUser)
           .ToListAsync(cancellationToken);
 
-        var userTasks = new List<TaskDto>();
+        var tasksToReturn = _mapper.Map<List<TaskDto>>(tasks);
 
-        foreach (var task in tasks)
-        {
-            foreach (var assignee in task.Assignees)
-            {
-                userTasks.Add
-                (
-                  new TaskDto 
-                  {
-                    Name = task.Name,
-                    Description = task.Description,
-                    Date = assignee.Date,
-                    DateCreated = assignee.DateCreated,
-                    IsCompleted = assignee.IsCompleted,
-                    Assignee = assignee.AppUser.UserName,
-                    CreatedBy = task.CreatedBy,
-                  }
-                );
-            }
-        }
-
-        return Result<List<TaskDto>>.Success(userTasks);
+        return Result<List<TaskDto>>.Success(tasksToReturn);
       }
     }
   }
