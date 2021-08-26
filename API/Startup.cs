@@ -1,5 +1,7 @@
 using API.Extensions;
 using API.Middleware;
+using Application.Tasks;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,6 +28,10 @@ namespace API
       {
         var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
         opt.Filters.Add(new AuthorizeFilter(policy));
+      })
+      .AddFluentValidation(config =>
+      {
+        config.RegisterValidatorsFromAssemblyContaining<Create>();
       });
       services.AddApplicationServices(_config);
       services.AddIdentityServices(_config);
