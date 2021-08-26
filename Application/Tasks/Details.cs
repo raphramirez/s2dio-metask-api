@@ -13,13 +13,13 @@ namespace Application.Tasks
 {
   public class Details
   {
-    public class Query : IRequest<Result<Domain.Task>>
+    public class Query : IRequest<Result<TaskDto>>
     {
       // query parameters
       public Guid Id { get; set; }
     }
 
-    public class Handler : IRequestHandler<Query, Result<Domain.Task>>
+    public class Handler : IRequestHandler<Query, Result<TaskDto>>
     {
       private readonly IMapper _mapper;
       private readonly DataContext _context;
@@ -29,12 +29,16 @@ namespace Application.Tasks
         _mapper = mapper;
       }
 
-      public async Task<Result<Domain.Task>> Handle(Query request, CancellationToken cancellationToken)
+      public async Task<Result<TaskDto>> Handle(Query request, CancellationToken cancellationToken)
       {
         var task = await _context.Tasks
+          .Include(a => a.Assignees)
+          .ThenInclude(u => u.AppUser)
           .FirstOrDefaultAsync(x => x.Id == request.Id);
 
-        return Result<Domain.Task>.Success(task);
+        var taskToReturn = _mapper.Map<TaskDto>(task);
+
+        return Result<TaskDto>.Success(taskToReturn);
       }
     }
   }
