@@ -73,6 +73,14 @@ namespace API.Controllers
       return BadRequest("Problem registering user");
     }
 
+    [HttpGet]
+    public async Task<ActionResult<UserDto>> GetCurrentUser()
+    {
+      var user = await _userManager.FindByNameAsync(User.FindFirstValue(ClaimTypes.Name));
+
+      return CreateUserObject(user);
+    }
+
     private UserDto CreateUserObject(AppUser user)
     {
       return new UserDto
@@ -80,15 +88,6 @@ namespace API.Controllers
         Token = _tokenService.CreateToken(user),
         Username = user.UserName,
       };
-    }
-
-    [Authorize]
-    [HttpGet]
-    public async Task<ActionResult<UserDto>> GetCurrentUser()
-    {
-      var user = await _userManager.FindByNameAsync(User.FindFirstValue(ClaimTypes.Name));
-
-      return CreateUserObject(user);
     }
   }
 }
