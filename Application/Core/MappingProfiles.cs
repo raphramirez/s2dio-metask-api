@@ -12,7 +12,7 @@ namespace Application.Core
 
             CreateMap<Task, TaskDto>();
 
-            CreateMap<UserTask, Profiles.Profile>()
+            CreateMap<UserTask, Profiles.AssignedTask>()
                 .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.UserName));
         }
     }
