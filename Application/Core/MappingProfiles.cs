@@ -12,8 +12,13 @@ namespace Application.Core
 
             CreateMap<Task, TaskDto>();
 
-            CreateMap<UserTask, Profiles.Profile>()
-                .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.UserName));
+            CreateMap<UserTask, TaskDto>()
+                .ForMember(d => d.Date, s => s.MapFrom(x => x.Date))
+                .ForMember(d => d.DateCreated, s => s.MapFrom(x => x.DateCreated))
+                .ForMember(d => d.IsCompleted, s => s.MapFrom(x => x.IsCompleted))
+                .ForMember(d => d.Assignee, s => s.MapFrom(x => x.AppUser.UserName))
+                .ForMember(d => d.CreatedBy, s => s.MapFrom(x => x.Task.CreatedBy));
+
         }
     }
 }
