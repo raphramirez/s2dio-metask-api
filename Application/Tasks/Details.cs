@@ -33,7 +33,8 @@ namespace Application.Tasks
       {
         var task = await _context.Tasks
           .Include(a => a.Assignees)
-          .ThenInclude(u => u.AppUser)
+            .ThenInclude(u => u.AppUser)
+          .Include(a => a.CreatedBy)
           .FirstOrDefaultAsync(x => x.Id == request.Id);
 
         var taskToReturn = _mapper.Map<TaskDto>(task);
