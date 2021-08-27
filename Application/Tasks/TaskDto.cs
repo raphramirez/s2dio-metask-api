@@ -10,8 +10,10 @@ namespace Application.Tasks
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string CreatedById { get; set; }
         public Profiles.Profile CreatedBy { get; set; }
-        public ICollection<AssignedTask> Assignees { get; set; } = new List<AssignedTask>();
+        public Profiles.Profile Assignee { get; set; }
+        public DateTime Date { get; set; }
+        public DateTime DateCreated { get; set; }
+        public bool IsCompleted { get; set; }
     }
 }

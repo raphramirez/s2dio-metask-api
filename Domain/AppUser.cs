@@ -6,6 +6,6 @@ namespace Domain
 {
     public class AppUser : IdentityUser
     {
-        public ICollection<UserTask> Tasks { get; set; } = new List<UserTask>();
+        public ICollection<Task> Tasks { get; set; } = new List<Task>();
     }
 }
