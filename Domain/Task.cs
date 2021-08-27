@@ -10,6 +10,10 @@ namespace Domain
         public string Description { get; set; }
         public string CreatedById { get; set; }
         public AppUser CreatedBy { get; set; }
-        public ICollection<UserTask> Assignees { get; set; } = new List<UserTask>();
+        public string AssigneeId { get; set; }
+        public AppUser Assignee { get; set; }
+        public DateTime Date { get; set; }
+        public DateTime DateCreated { get; set; }
+        public bool IsCompleted { get; set; }
     }
 }

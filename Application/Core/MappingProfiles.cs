@@ -6,15 +6,13 @@ namespace Application.Core
 {
     public class MappingProfiles : Profile
     {
-        public MappingProfiles ()
+        public MappingProfiles()
         {
             CreateMap<Task, Task>();
 
             CreateMap<Task, TaskDto>()
-                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id));
-
-            CreateMap<UserTask, Profiles.AssignedTask>()
-                .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.UserName));
+                .ForMember(d => d.Assignee, o => o.MapFrom(s => s.Assignee))
+                .ForMember(d => d.CreatedBy, o => o.MapFrom(s => s.CreatedBy));
 
             CreateMap<AppUser, Profiles.Profile>()
             .ForMember(d => d.Username, o => o.MapFrom(s => s.UserName));
