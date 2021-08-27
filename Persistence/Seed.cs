@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Persistence
 {
-  public class Seed
-  {
-    public static async System.Threading.Tasks.Task SeedData(DataContext context, UserManager<AppUser> userManager)
+    public class Seed
     {
-      if (!context.Tasks.Any() && !userManager.Users.Any())
-      {
-        var users = new List<AppUser>
+        public static async System.Threading.Tasks.Task SeedData(DataContext context, UserManager<AppUser> userManager)
+        {
+            if (!context.Tasks.Any() && !userManager.Users.Any())
+            {
+                var users = new List<AppUser>
                 {
                     new AppUser
                     {
@@ -41,72 +41,48 @@ namespace Persistence
                     },
                 };
 
-        foreach (var user in users)
-        {
-          await userManager.CreateAsync(user, "Pa$$w0rd");
-        }
+                foreach (var user in users)
+                {
+                    await userManager.CreateAsync(user, "Pa$$w0rd");
+                }
 
-        var tasks = new List<Domain.Task>
+                var tasks = new List<Domain.Task>
                 {
                     new Domain.Task
                     {
-                        Name = "Task 1",
-                        Description = "test description",
+                        Name = "Cleaning",
+                        Description = "This is a test description.",
+                        Date = DateTime.Now.AddDays(1),
                         CreatedBy = users[0],
-                        Assignees = new List<UserTask>
-                        {
-                            new UserTask
-                            {
-                                AppUser = users[1],
-                                Date = DateTime.Now.AddDays(2),
-                                DateCreated = DateTime.Now,
-                            },
-                            new UserTask
-                            {
-                                AppUser = users[2],
-                                Date = DateTime.Now.AddDays(3),
-                                DateCreated = DateTime.Now,
-                            },
-                            new UserTask
-                            {
-                                AppUser = users[3],
-                                Date = DateTime.Now.AddDays(4),
-                                DateCreated = DateTime.Now,
-                            },
-                        }
+                        DateCreated = DateTime.Now,
+                        Assignee = users[3],
+                        IsCompleted = false,
                     },
                     new Domain.Task
                     {
-                        Name = "Task 2",
-                        Description = "test description",
+                        Name = "Dishwashing",
+                        Description = "This is a test description.",
+                        Date = DateTime.Now.AddDays(2),
                         CreatedBy = users[0],
-                        Assignees = new List<UserTask>
-                        {
-                             new UserTask
-                            {
-                                AppUser = users[3],
-                                Date = DateTime.Now.AddDays(4),
-                                DateCreated = DateTime.Now,
-                            },
-                        }
+                        DateCreated = DateTime.Now,
+                        Assignee = users[3],
+                        IsCompleted = false,
                     },
                     new Domain.Task
                     {
-                        Name = "Task 3",
-                        Description = "test description",
+                        Name = "Kitchen",
+                        Description = "This is a test description.",
+                        Date = DateTime.Now.AddDays(2),
                         CreatedBy = users[0],
-                    },
-                    new Domain.Task
-                    {
-                        Name = "Task 4",
-                        Description = "test description",
-                        CreatedBy = users[0],
+                        DateCreated = DateTime.Now,
+                        Assignee = users[3],
+                        IsCompleted = false,
                     },
                 };
 
-        await context.Tasks.AddRangeAsync(tasks);
-        await context.SaveChangesAsync();
-      }
+                await context.Tasks.AddRangeAsync(tasks);
+                await context.SaveChangesAsync();
+            }
+        }
     }
-  }
 }
