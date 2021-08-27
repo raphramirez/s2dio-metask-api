@@ -28,8 +28,9 @@ namespace Application.Tasks
       public async Task<Result<List<TaskDto>>> Handle(Query request, CancellationToken cancellationToken)
       {
         var tasks = await _context.Tasks
+          .Include(a => a.CreatedBy)
           .Include(a => a.Assignees)
-          .ThenInclude(u => u.AppUser)
+          .ThenInclude(a => a.AppUser)
           .ToListAsync(cancellationToken);
 
         var tasksToReturn = _mapper.Map<List<TaskDto>>(tasks);

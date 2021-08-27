@@ -10,10 +10,14 @@ namespace Application.Core
         {
             CreateMap<Task, Task>();
 
-            CreateMap<Task, TaskDto>();
+            CreateMap<Task, TaskDto>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id));
 
             CreateMap<UserTask, Profiles.AssignedTask>()
                 .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.UserName));
+
+            CreateMap<AppUser, Profiles.Profile>()
+            .ForMember(d => d.Username, o => o.MapFrom(s => s.UserName));
         }
     }
 }

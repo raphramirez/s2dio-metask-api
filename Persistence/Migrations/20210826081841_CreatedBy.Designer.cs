@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210826081841_CreatedBy")]
+    partial class CreatedBy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,9 +63,6 @@ namespace Persistence.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("TaskId")
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("INTEGER");
 
@@ -92,9 +91,6 @@ namespace Persistence.Migrations
                     b.Property<string>("CreatedById")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("CreatedById1")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
@@ -103,7 +99,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedById1");
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("Tasks");
                 });
@@ -264,7 +260,7 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.AppUser", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedById1");
+                        .HasForeignKey("CreatedById");
 
                     b.Navigation("CreatedBy");
                 });

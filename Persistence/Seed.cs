@@ -52,7 +52,7 @@ namespace Persistence
                     {
                         Name = "Task 1",
                         Description = "test description",
-                        CreatedBy = "Raph",
+                        CreatedBy = users[0],
                         Assignees = new List<UserTask>
                         {
                             new UserTask
@@ -79,7 +79,7 @@ namespace Persistence
                     {
                         Name = "Task 2",
                         Description = "test description",
-                        CreatedBy = "Raph",
+                        CreatedBy = users[0],
                         Assignees = new List<UserTask>
                         {
                              new UserTask
@@ -94,13 +94,13 @@ namespace Persistence
                     {
                         Name = "Task 3",
                         Description = "test description",
-                        CreatedBy = "Raph",
+                        CreatedBy = users[0],
                     },
                     new Domain.Task
                     {
                         Name = "Task 4",
                         Description = "test description",
-                        CreatedBy = "Raph",
+                        CreatedBy = users[0],
                     },
                 };
 
