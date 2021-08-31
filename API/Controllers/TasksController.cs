@@ -28,11 +28,26 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Create.Command { Task = task }));
         }
 
+        [Authorize(Policy = "IsCreator")]
         [HttpPut("{id}")]
         public async Task<IActionResult> EditTask(Guid id, Domain.Task task)
         {
             task.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command { Task = task }));
+        }
+
+        [Authorize(Policy = "IsCreator")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTask(Guid id)
+        {
+            return HandleResult(await Mediator.Send(new Delete.Command { Id = id }));
+        }
+
+        [Authorize(Policy = "IsAssignee")]
+        [HttpPost("{id}/toggle")]
+        public async Task<IActionResult> ToggleComplete(Guid id)
+        {
+            return HandleResult(await Mediator.Send(new ToggleComplete.Command { Id = id }));
         }
     }
 }
