@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain;
@@ -14,36 +15,37 @@ using Persistence;
 
 namespace API
 {
-  public class Program
-  {
-    public static async System.Threading.Tasks.Task Main(string[] args)
+    public class Program
     {
-      var host = CreateHostBuilder(args).Build();
-      using var scope = host.Services.CreateScope();
-      var services = scope.ServiceProvider;
+        public static async System.Threading.Tasks.Task Main(string[] args)
+        {
+            var host = CreateHostBuilder(args).Build();
 
-      try
-      {
-        var context = services.GetRequiredService<DataContext>();
-        var userManager = services.GetRequiredService<UserManager<AppUser>>();
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
 
-        await context.Database.MigrateAsync();
-        await Seed.SeedData(context, userManager);
-      }
-      catch (Exception e)
-      {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(e, "An error occured during migration");
-      }
-
-      await host.RunAsync();
-    }
-
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
+            try
             {
-              webBuilder.UseStartup<Startup>();
-            });
-  }
+                var context = services.GetRequiredService<DataContext>();
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
+
+                await context.Database.MigrateAsync();
+                await Seed.SeedData(context, userManager);
+            }
+            catch (Exception e)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(e, "An error occured during migration");
+            }
+
+            await host.RunAsync();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+    }
 }
