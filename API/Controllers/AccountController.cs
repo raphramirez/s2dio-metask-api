@@ -1,12 +1,15 @@
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Services;
+using AutoMapper;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Persistence;
 
 namespace API.Controllers
 {
@@ -18,14 +21,29 @@ namespace API.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly TokenService _tokenService;
+        private readonly DataContext _context;
+        private readonly IMapper _mapper;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            TokenService tokenService)
+            TokenService tokenService, DataContext context, IMapper mapper)
         {
             _tokenService = tokenService;
+            _context = context;
+            _mapper = mapper;
             _signInManager = signInManager;
             _userManager = userManager;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("list")]
+        public async Task<List<Application.Profiles.Profile>> GetAppUsers()
+        {
+            var users = await _context.AppUsers.ToListAsync();
+
+            var usersToReturn = _mapper.Map<List<Application.Profiles.Profile>>(users);
+
+            return usersToReturn;
         }
 
         [HttpPost("login")]
