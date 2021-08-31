@@ -27,5 +27,12 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new Create.Command { Task = task }));
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditTask(Guid id, Domain.Task task)
+        {
+            task.Id = id;
+            return HandleResult(await Mediator.Send(new Edit.Command { Task = task }));
+        }
     }
 }
