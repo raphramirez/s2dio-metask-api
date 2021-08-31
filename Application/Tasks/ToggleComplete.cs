@@ -39,8 +39,7 @@ namespace Application.Tasks
                 var task = await _context.Tasks.FindAsync(request.Id);
                 if (task == null) return null;
 
-                // check if user is assignee
-
+                task.IsCompleted = !task.IsCompleted;
 
                 var result = await _context.SaveChangesAsync() > 0;
 

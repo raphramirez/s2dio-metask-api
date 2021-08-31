@@ -43,6 +43,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Delete.Command { Id = id }));
         }
 
+        [Authorize(Policy = "IsAssignee")]
         [HttpPost("{id}/toggle")]
         public async Task<IActionResult> ToggleComplete(Guid id)
         {

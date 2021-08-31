@@ -43,8 +43,13 @@ namespace API.Extensions
                 {
                     policy.Requirements.Add(new IsCreatorRequirement());
                 });
+                opt.AddPolicy("IsAssignee", policy =>
+                {
+                    policy.Requirements.Add(new IsAssigneeRequirement());
+                });
             });
             services.AddTransient<IAuthorizationHandler, IsCreatorRequirementHandler>();
+            services.AddTransient<IAuthorizationHandler, IsAssigneeRequirementHandler>();
             services.AddScoped<TokenService>();
 
             return services;
