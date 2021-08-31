@@ -1,5 +1,4 @@
 using Application.Tasks;
-using Application.Users;
 using AutoMapper;
 using Domain;
 
