@@ -95,7 +95,13 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
-            var user = await _userManager.FindByNameAsync(User.FindFirstValue(ClaimTypes.Name));
+            var username = User.FindFirstValue(ClaimTypes.Name);
+
+            if (username == null) return NotFound("The token is either invalid or expired.");
+
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null) return NotFound();
 
             return CreateUserObject(user);
         }
