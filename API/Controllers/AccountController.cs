@@ -97,7 +97,7 @@ namespace API.Controllers
         {
             var username = User.FindFirstValue(ClaimTypes.Name);
 
-            if (username == null) return NotFound();
+            if (username == null) return NotFound("The token is either invalid or expired.");
 
             var user = await _userManager.FindByNameAsync(username);
 
