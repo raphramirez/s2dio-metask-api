@@ -9,11 +9,10 @@ namespace API.Controllers
 {
     public class TasksController : BaseApiController
     {
-        [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetTasks()
+        public async Task<IActionResult> GetTasks([FromQuery] TaskParams param)
         {
-            return HandleResult(await Mediator.Send(new List.Query()));
+            return HandleResult(await Mediator.Send(new List.Query { Params = param }));
         }
 
         [HttpGet("{id}")]
