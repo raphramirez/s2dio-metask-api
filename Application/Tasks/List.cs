@@ -47,6 +47,8 @@ namespace Application.Tasks
                     query = query.Where(t => t.Assignee.UserName == _usernameAccessor.getUsername());
                 }
 
+                query = query.Where(t => t.Date >= request.Params.Date && t.Date < request.Params.Date.AddDays(1));
+
                 var tasks = await query.ToListAsync(cancellationToken);
 
                 var tasksToReturn = _mapper.Map<List<TaskDto>>(tasks);
