@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
+using System.Net;
 
 namespace API
 {
@@ -48,13 +49,16 @@ namespace API
                             errors.Add(error.ErrorMessage);
                         }
                     }
+
                     var apiErrorResponse = new
                     {
-                        Title = "One or more validation errors occurred.",
+                        Title = "One or more validation errors occured.",
+                        Instance = context.HttpContext.Request.Path.Value,
+                        Status = (int)HttpStatusCode.BadRequest,
                         Errors = errors
                     };
-                    var result = new BadRequestObjectResult(apiErrorResponse);
-                    return result;
+
+                    return new BadRequestObjectResult(apiErrorResponse);
                 };
             });
             services.AddApplicationServices(_config);
