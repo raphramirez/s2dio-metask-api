@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using API.DTOs;
@@ -14,9 +15,7 @@ using Persistence;
 namespace API.Controllers
 {
     [AllowAnonymous]
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
@@ -73,8 +72,18 @@ namespace API.Controllers
         {
             if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
             {
-                ModelState.AddModelError("username", "Username taken");
-                return ValidationProblem();
+                var apiErrorResponse = new
+                {
+                    Title = "One or more validation errors occured",
+                    Instance = "/api/account/register",
+                    Status = (int)HttpStatusCode.BadRequest,
+                    Errors = new string[]
+                    {
+                        "Username is already taken."
+                    }
+                };
+
+                return BadRequest(apiErrorResponse);
             }
 
             var user = new AppUser
