@@ -11,13 +11,26 @@ namespace Persistence
     {
         public static async System.Threading.Tasks.Task SeedData(DataContext context, UserManager<AppUser> userManager)
         {
+
+            string[] tasksNames =
+            {
+                "Dishwashing",
+                "Cleaning",
+                "CR",
+                "Trash",
+                "Kitchen",
+                "Coffee Cleaning",
+                "Rice Management",
+                "Stock Management",
+            };
+
             if (!context.Tasks.Any() && !userManager.Users.Any())
             {
                 var users = new List<AppUser>
                 {
                     new AppUser
                     {
-                        UserName = "raph"
+                        UserName = "elbert"
                     },
                     new AppUser
                     {
@@ -25,7 +38,7 @@ namespace Persistence
                     },
                     new AppUser
                     {
-                        UserName = "hanz"
+                        UserName = "jhie"
                     },
                     new AppUser
                     {
@@ -33,11 +46,19 @@ namespace Persistence
                     },
                     new AppUser
                     {
-                        UserName = "jhie"
+                        UserName = "raph"
                     },
                     new AppUser
                     {
-                        UserName = "elbert"
+                        UserName = "hanz"
+                    },
+                    new AppUser
+                    {
+                        UserName = "jude"
+                    },
+                    new AppUser
+                    {
+                        UserName = "jade"
                     },
                 };
 
@@ -46,39 +67,33 @@ namespace Persistence
                     await userManager.CreateAsync(user, "Pa$$w0rd");
                 }
 
-                var tasks = new List<Domain.Task>
+                int daysInSept = DateTime.DaysInMonth(2021, 9);
+                var tasks = new List<Domain.Task>();
+
+                var userIndex = 0;
+
+                // Month of Sept
+                for (int day = 1; day <= daysInSept; day++)
                 {
-                    new Domain.Task
+                    userIndex--;
+                    for (int i = 0; i < tasksNames.Length; i++)
                     {
-                        Name = "Cleaning",
-                        Description = "This is a test description.",
-                        Date = DateTime.Now.AddDays(1),
-                        CreatedBy = users[0],
-                        DateCreated = DateTime.Now,
-                        Assignee = users[3],
-                        IsCompleted = false,
-                    },
-                    new Domain.Task
-                    {
-                        Name = "Dishwashing",
-                        Description = "This is a test description.",
-                        Date = DateTime.Now.AddDays(2),
-                        CreatedBy = users[0],
-                        DateCreated = DateTime.Now,
-                        Assignee = users[3],
-                        IsCompleted = false,
-                    },
-                    new Domain.Task
-                    {
-                        Name = "Kitchen",
-                        Description = "This is a test description.",
-                        Date = DateTime.Now.AddDays(2),
-                        CreatedBy = users[0],
-                        DateCreated = DateTime.Now,
-                        Assignee = users[3],
-                        IsCompleted = false,
-                    },
-                };
+                        if (userIndex < 0 || userIndex > users.Count - 1) userIndex = 0;
+
+                        tasks.Add(new Domain.Task
+                        {
+                            Name = tasksNames[i],
+                            Description = "Daily tasks.",
+                            Date = new DateTime(2021, 09, day),
+                            CreatedBy = users[7],
+                            DateCreated = DateTime.Now,
+                            Assignee = users[userIndex],
+                            IsCompleted = false,
+                        });
+
+                        userIndex++;
+                    }
+                }
 
                 await context.Tasks.AddRangeAsync(tasks);
                 await context.SaveChangesAsync();
