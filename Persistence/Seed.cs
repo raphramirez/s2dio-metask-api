@@ -84,7 +84,7 @@ namespace Persistence
                         {
                             Name = tasksNames[i],
                             Description = "Daily tasks.",
-                            Date = new DateTime(2021, 09, day),
+                            Date = new DateTime(2021, 09, day, 8, 0, 0),
                             CreatedBy = users[7],
                             DateCreated = DateTime.Now,
                             Assignee = users[userIndex],

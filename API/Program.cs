@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Services;
 using Domain;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +39,8 @@ namespace API
                 logger.LogError(e, "An error occured during migration");
             }
 
+            //var fns = new FirebaseNotificationService();
+            //fns.CreateNotificationAsync("c0D156ELR62dDkfaMBmxmT:APA91bFG9prhJPRo9bz1ejLpDBNoGROJAgmEACwpEwlXCgKiGuxAZGuyxgeFi63eJw7nLJURMyiECLq5ULepq7ZH5vZv9Z4bNR0wfr6oMhnvLUnrA_HC-H7tsfdkaIUqp_ORyUJm12db");
             await host.RunAsync();
         }
 
