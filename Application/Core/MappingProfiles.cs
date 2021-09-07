@@ -1,3 +1,4 @@
+using Application.Notifications;
 using Application.Tasks;
 using AutoMapper;
 using Domain;
@@ -16,6 +17,10 @@ namespace Application.Core
 
             CreateMap<AppUser, Profiles.Profile>()
             .ForMember(d => d.Username, o => o.MapFrom(s => s.UserName));
+
+            CreateMap<NotificationToken, NotificationTokenDto>()
+                .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.UserName))
+                .ForMember(d => d.Token, o => o.MapFrom(s => s.Value));
         }
     }
 }

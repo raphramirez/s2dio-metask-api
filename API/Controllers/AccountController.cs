@@ -1,11 +1,14 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Services;
+using Application.Notifications;
 using AutoMapper;
 using Domain;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -99,6 +102,43 @@ namespace API.Controllers
             }
 
             return BadRequest("Problem registering user");
+        }
+
+        [HttpGet("tokens")]
+        public async Task<ActionResult<List<NotificationTokenDto>>> UserTokens(UsernameDto usernameDto)
+        {
+            var user = await _userManager.FindByNameAsync(usernameDto.Username);
+
+            if (user == null) return NotFound();
+
+            var tokens = await _context.NotificationTokens
+                  .Include(a => a.AppUser)
+                  .Where(t => t.AppUser.UserName == usernameDto.Username)
+                  .ToListAsync();
+
+            var tokensToReturn = _mapper.Map<List<NotificationTokenDto>>(tokens);
+
+            return tokensToReturn;
+        }
+
+        [HttpPost("tokens/register")]
+        public async Task<ActionResult<Unit>> RegisterToken(RegisterTokenDto tokenDto)
+        {
+            var username = User.FindFirstValue(ClaimTypes.Name);
+
+            if (username == null) return Unauthorized();
+
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null) return Unauthorized();
+
+            user.Tokens.Add(new NotificationToken { Value = tokenDto.Token });
+
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if (!result) return BadRequest("Failed to register token.");
+
+            return Unit.Value;
         }
 
         [HttpGet]
