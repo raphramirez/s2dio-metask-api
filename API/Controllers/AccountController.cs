@@ -101,7 +101,16 @@ namespace API.Controllers
                 return CreateUserObject(user);
             }
 
-            return BadRequest("Problem registering user");
+            return BadRequest(new
+            {
+                Title = "One or more validation errors occured",
+                Instance = "/api/account/register",
+                Status = (int)HttpStatusCode.BadRequest,
+                Errors = new string[]
+                    {
+                        "Failed to register the user."
+                    }
+            });
         }
 
         [HttpGet("tokens")]
@@ -125,18 +134,51 @@ namespace API.Controllers
         public async Task<ActionResult<Unit>> RegisterToken(RegisterTokenDto tokenDto)
         {
             var username = User.FindFirstValue(ClaimTypes.Name);
-
             if (username == null) return Unauthorized();
 
             var user = await _userManager.FindByNameAsync(username);
-
             if (user == null) return Unauthorized();
+
+            var duplicateToken = await _context.NotificationTokens
+                .FirstOrDefaultAsync(t => t.AppUser.UserName == user.UserName && t.Value == tokenDto.Token);
+            if (duplicateToken != null)
+            {
+                return Unit.Value;
+            }
 
             user.Tokens.Add(new NotificationToken { Value = tokenDto.Token });
 
             var result = await _context.SaveChangesAsync() > 0;
+            if (!result)
+            {
+                var apiErrorResponse = new
+                {
+                    Title = "One or more validation errors occured",
+                    Instance = "/api/account/tokens/register",
+                    Status = (int)HttpStatusCode.BadRequest,
+                    Errors = new string[]
+                    {
+                        "Failed to register token."
+                    }
+                };
 
-            if (!result) return BadRequest("Failed to register token.");
+                return BadRequest(apiErrorResponse);
+            }
+
+            return Unit.Value;
+        }
+
+        [HttpDelete("tokens/delete")]
+        public async Task<ActionResult<Unit>> DeleteToken(RegisterTokenDto tokenDto)
+        {
+            var token = await _context.NotificationTokens.FirstOrDefaultAsync(x => x.Value == tokenDto.Token);
+
+            if (token == null) return null;
+
+            _context.Remove(token);
+
+            var result = await _context.SaveChangesAsync() > 0;
+            if (!result) return BadRequest("Failed to delte token.");
 
             return Unit.Value;
         }
@@ -146,7 +188,21 @@ namespace API.Controllers
         {
             var username = User.FindFirstValue(ClaimTypes.Name);
 
-            if (username == null) return NotFound("The token is either invalid or expired.");
+            if (username == null)
+            {
+                var apiErrorResponse = new
+                {
+                    Title = "One or more validation errors occured",
+                    Instance = "/api/account",
+                    Status = (int)HttpStatusCode.BadRequest,
+                    Errors = new string[]
+                    {
+                        "The token is either invalid or expired."
+                    }
+                };
+
+                return BadRequest(apiErrorResponse);
+            }
 
             var user = await _userManager.FindByNameAsync(username);
 

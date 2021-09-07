@@ -41,7 +41,10 @@ namespace NotificationManager
                 Console.WriteLine(task.Name);
             }
 
+            // Get Tokens
+
             // Send Notifications
+
         }
     }
 
