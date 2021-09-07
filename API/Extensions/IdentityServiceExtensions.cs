@@ -51,7 +51,6 @@ namespace API.Extensions
             services.AddTransient<IAuthorizationHandler, IsCreatorRequirementHandler>();
             services.AddTransient<IAuthorizationHandler, IsAssigneeRequirementHandler>();
             services.AddScoped<TokenService>();
-            services.AddScoped<FirebaseNotificationService>();
 
             return services;
         }

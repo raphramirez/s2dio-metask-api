@@ -7,11 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API.Services
+namespace Application.Notifications
 {
     public class FirebaseNotificationService
     {
-
         public FirebaseNotificationService()
         {
             var defaultApp = FirebaseApp.Create(new AppOptions()
@@ -19,18 +18,17 @@ namespace API.Services
                 Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "key.json"))
             });
 
-            Console.WriteLine(defaultApp.Name);
-            Console.WriteLine("hello world!");
+            Console.WriteLine(defaultApp.Name + " initialized");
         }
 
-        public async void CreateNotificationAsync(string registrationToken)
+        public async void CreateNotificationAsync(string registrationToken, string title, string body)
         {
             var message = new Message
             {
                 Notification = new Notification
                 {
-                    Title = "Hello World Yes",
-                    Body = "This is a notification body."
+                    Title = title,
+                    Body = body
                 },
                 Token = registrationToken,
             };
