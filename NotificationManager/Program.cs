@@ -40,6 +40,8 @@ namespace NotificationManager
             {
                 Console.WriteLine(task.Name);
             }
+
+            // Send Notifications
         }
     }
 
