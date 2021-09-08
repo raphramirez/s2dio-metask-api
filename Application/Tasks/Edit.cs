@@ -1,9 +1,12 @@
 ﻿using Application.Core;
+using Application.Notifications;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,11 +23,13 @@ namespace Application.Tasks
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
+            private readonly FirebaseNotificationService _notificationService;
 
-            public Handler(DataContext context, IMapper mapper)
+            public Handler(DataContext context, IMapper mapper, FirebaseNotificationService notificationService)
             {
                 _context = context;
                 _mapper = mapper;
+                _notificationService = notificationService;
             }
 
             public class CommandValidator : AbstractValidator<Command>
@@ -37,15 +42,25 @@ namespace Application.Tasks
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var task = await _context.Tasks.FindAsync(request.Task.Id);
+                var task = await _context.Tasks
+                    .Include(a => a.Assignee)
+                    .FirstOrDefaultAsync(x => x.Id == request.Task.Id);
 
                 if (task == null) return null;
 
-                // get assignee
+                var oldAssignee = await _context.Users.FirstOrDefaultAsync(user => user.UserName == request.Task.Assignee.UserName);
+
+                // get new assignee
                 var assignee = await _context.Users.FirstOrDefaultAsync(user => user.UserName == request.Task.Assignee.UserName);
                 if (assignee == null) return Result<Unit>.Failure("Assignee does not exists.");
 
-                task.Assignee = request.Task.Assignee;
+                bool assigneeChanged = false;
+
+                if (task.Assignee.UserName != assignee.UserName)
+                {
+                    assigneeChanged = true;
+                    task.Assignee = request.Task.Assignee;
+                }
                 task.Name = request.Task.Name;
                 task.Description = request.Task.Description;
                 task.Date = request.Task.Date;
@@ -53,6 +68,23 @@ namespace Application.Tasks
                 var result = await _context.SaveChangesAsync() > 0;
 
                 if (!result) return Result<Unit>.Failure("Failed to update task.");
+
+                if (assigneeChanged)
+                {
+                    // Notify new assignee
+                    var regTokens = await _context.NotificationTokens
+                        .Where(x => x.AppUser.UserName == assignee.UserName)
+                        .Select(t => t.Value)
+                        .ToListAsync();
+                    if (regTokens.Count > 0)
+                    {
+                        await FirebaseNotificationService.CreateNotificationAsync(
+                            regTokens,
+                            "Metask",
+                            $"You have a new task: {task.Name}"
+                        );
+                    }
+                }
 
                 return Result<Unit>.Success(Unit.Value);
             }

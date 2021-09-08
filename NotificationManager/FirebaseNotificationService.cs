@@ -4,10 +4,8 @@ using Google.Apis.Auth.OAuth2;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Application.Notifications
+namespace NotificationManager
 {
     public class FirebaseNotificationService
     {
@@ -17,9 +15,11 @@ namespace Application.Notifications
             {
                 Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "key.json"))
             });
+
+            Console.WriteLine(defaultApplication.Name + " initialized");
         }
 
-        public static async Task<BatchResponse> CreateNotificationAsync(List<string> registrationTokens, string title, string body)
+        public static async System.Threading.Tasks.Task<BatchResponse> CreateNotificationAsync(List<string> registrationTokens, string title, string body)
         {
             var message = new MulticastMessage
             {
