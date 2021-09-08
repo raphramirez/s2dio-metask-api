@@ -143,7 +143,7 @@ namespace API.Controllers
                 .FirstOrDefaultAsync(t => t.AppUser.UserName == user.UserName && t.Value == tokenDto.Token);
             if (duplicateToken != null)
             {
-                return Unit.Value;
+                return Ok(Unit.Value);
             }
 
             user.Tokens.Add(new NotificationToken { Value = tokenDto.Token });
@@ -165,7 +165,7 @@ namespace API.Controllers
                 return BadRequest(apiErrorResponse);
             }
 
-            return Unit.Value;
+            return Ok(Unit.Value);
         }
 
         [HttpDelete("tokens/delete")]
@@ -180,7 +180,7 @@ namespace API.Controllers
             var result = await _context.SaveChangesAsync() > 0;
             if (!result) return BadRequest("Failed to delte token.");
 
-            return Unit.Value;
+            return Ok(Unit.Value);
         }
 
         [HttpGet]
