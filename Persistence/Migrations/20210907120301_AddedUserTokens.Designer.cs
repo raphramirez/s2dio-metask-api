@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210907120301_AddedUserTokens")]
+    partial class AddedUserTokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,7 +98,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("NotificationTokens");
+                    b.ToTable("NotificationToken");
                 });
 
             modelBuilder.Entity("Domain.Task", b =>
@@ -266,7 +268,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.NotificationToken", b =>
                 {
                     b.HasOne("Domain.AppUser", "AppUser")
-                        .WithMany("Tokens")
+                        .WithMany("Token")
                         .HasForeignKey("AppUserId");
 
                     b.Navigation("AppUser");
@@ -342,7 +344,7 @@ namespace Persistence.Migrations
                 {
                     b.Navigation("Tasks");
 
-                    b.Navigation("Tokens");
+                    b.Navigation("Token");
                 });
 #pragma warning restore 612, 618
         }

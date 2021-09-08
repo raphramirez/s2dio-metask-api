@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
 using Application.Interfaces;
+using Application.Notifications;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +22,12 @@ namespace Application.Tasks
         {
             private readonly DataContext _context;
             private readonly IUsernameAccessor _usernameAccessor;
-            public Handler(DataContext context, IUsernameAccessor usernameAccessor)
+            private readonly FirebaseNotificationService _notificationService;
+
+            public Handler(DataContext context, IUsernameAccessor usernameAccessor, FirebaseNotificationService notificationService)
             {
                 _usernameAccessor = usernameAccessor;
+                _notificationService = notificationService;
                 _context = context;
             }
 
@@ -58,6 +62,12 @@ namespace Application.Tasks
                 var result = await _context.SaveChangesAsync() > 0;
 
                 if (!result) return Result<Unit>.Failure("Failed to create task");
+
+                _notificationService.CreateNotificationAsync(
+                    "c0D156ELR62dDkfaMBmxmT:APA91bFG9prhJPRo9bz1ejLpDBNoGROJAgmEACwpEwlXCgKiGuxAZGuyxgeFi63eJw7nLJURMyiECLq5ULepq7ZH5vZv9Z4bNR0wfr6oMhnvLUnrA_HC-H7tsfdkaIUqp_ORyUJm12db",
+                    "Metask",
+                    $"You have a new task: {request.Task.Name}"
+                );
 
                 return Result<Unit>.Success(Unit.Value);
             }
