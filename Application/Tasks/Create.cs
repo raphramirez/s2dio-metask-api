@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
 using Application.Interfaces;
 using Application.Notifications;
+using Domain;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -42,10 +45,12 @@ namespace Application.Tasks
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 // get created by
-                var createdBy = await _context.Users.FirstOrDefaultAsync(user => user.UserName == _usernameAccessor.getUsername());
+                var createdBy = await _context.Users
+                    .FirstOrDefaultAsync(user => user.UserName == _usernameAccessor.getUsername());
 
                 // get assignee
-                var assignee = await _context.Users.FirstOrDefaultAsync(user => user.UserName == request.Task.Assignee.UserName);
+                var assignee = await _context.Users
+                    .FirstOrDefaultAsync(user => user.UserName == request.Task.Assignee.UserName);
 
                 if (assignee == null) return null;
 
@@ -63,11 +68,19 @@ namespace Application.Tasks
 
                 if (!result) return Result<Unit>.Failure("Failed to create task");
 
-                _notificationService.CreateNotificationAsync(
-                    "c0D156ELR62dDkfaMBmxmT:APA91bFG9prhJPRo9bz1ejLpDBNoGROJAgmEACwpEwlXCgKiGuxAZGuyxgeFi63eJw7nLJURMyiECLq5ULepq7ZH5vZv9Z4bNR0wfr6oMhnvLUnrA_HC-H7tsfdkaIUqp_ORyUJm12db",
-                    "Metask",
-                    $"You have a new task: {request.Task.Name}"
-                );
+                // Notify assignee
+                var regTokens = await _context.NotificationTokens
+                    .Where(x => x.AppUser.UserName == assignee.UserName)
+                    .Select(t => t.Value)
+                    .ToListAsync();
+                if (regTokens.Count > 0)
+                {
+                    await FirebaseNotificationService.CreateNotificationAsync(
+                        regTokens,
+                        "Metask",
+                        $"You have a new task: {request.Task.Name}"
+                    );
+                }
 
                 return Result<Unit>.Success(Unit.Value);
             }

@@ -17,7 +17,6 @@ using Persistence;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]
     public class AccountController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
@@ -37,8 +36,8 @@ namespace API.Controllers
             _userManager = userManager;
         }
 
-        [AllowAnonymous]
         [HttpGet("list")]
+        [Authorize]
         public async Task<List<Application.Profiles.Profile>> GetAppUsers()
         {
             var users = await _context.AppUsers.ToListAsync();
@@ -48,6 +47,7 @@ namespace API.Controllers
             return usersToReturn;
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
@@ -70,6 +70,7 @@ namespace API.Controllers
             return Unauthorized();
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
@@ -114,6 +115,7 @@ namespace API.Controllers
         }
 
         [HttpGet("tokens")]
+        [Authorize]
         public async Task<ActionResult<List<NotificationTokenDto>>> UserTokens(UsernameDto usernameDto)
         {
             var user = await _userManager.FindByNameAsync(usernameDto.Username);
@@ -131,6 +133,7 @@ namespace API.Controllers
         }
 
         [HttpPost("tokens/register")]
+        [Authorize]
         public async Task<ActionResult<Unit>> RegisterToken(RegisterTokenDto tokenDto)
         {
             var username = User.FindFirstValue(ClaimTypes.Name);
@@ -169,6 +172,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("tokens/delete")]
+        [Authorize]
         public async Task<ActionResult<Unit>> DeleteToken(RegisterTokenDto tokenDto)
         {
             var token = await _context.NotificationTokens.FirstOrDefaultAsync(x => x.Value == tokenDto.Token);
@@ -184,6 +188,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var username = User.FindFirstValue(ClaimTypes.Name);
