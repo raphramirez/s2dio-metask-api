@@ -11,7 +11,7 @@ namespace NotificationManager
 {
     class Program
     {
-        private const string URL = "https://localhost:5001/api";
+        private const string URL = "http://192.168.100.40:60001/api";
 
         private static FirebaseNotificationService firebaseNotification;
 
