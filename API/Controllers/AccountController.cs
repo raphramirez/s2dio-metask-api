@@ -114,6 +114,36 @@ namespace API.Controllers
             });
         }
 
+        [Authorize]
+        [HttpPost("password/change")]
+        public async Task<ActionResult<Unit>> ChangePassword(ChangePasswordDto changePasswordDto)
+        {
+            var username = User.FindFirstValue(ClaimTypes.Name);
+
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null) return Unauthorized();
+
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
+
+            if (changePasswordResult.Succeeded)
+            {
+                return Ok(Unit.Value);
+            } 
+            else
+            {
+                var apiErrorResponse = new
+                {
+                    Title = "One or more validation errors occured",
+                    Instance = "/api/account/register",
+                    Status = (int)HttpStatusCode.BadRequest,
+                    Errors = changePasswordResult.Errors.Select(x => x.Description)
+                };
+
+                return BadRequest(apiErrorResponse);
+            }
+        }
+
         [HttpGet("tokens")]
         [Authorize]
         public async Task<ActionResult<List<NotificationTokenDto>>> UserTokens(UsernameDto usernameDto)
