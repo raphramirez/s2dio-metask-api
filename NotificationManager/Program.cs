@@ -25,9 +25,7 @@ namespace NotificationManager
             // Login
             var jsonLogin = JsonConvert.SerializeObject(new Login { Username = "raph", Password = "Pa$$w0rd" });
             var data = new StringContent(jsonLogin, Encoding.UTF8, "application/json");
-
             var loginResponse = await client.PostAsync(URL + "/account/login", data);
-
             string result = loginResponse.Content.ReadAsStringAsync().Result;
             var loggedInUser = JsonConvert.DeserializeObject<User>(result);
             var token = loggedInUser.Token;
