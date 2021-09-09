@@ -212,7 +212,12 @@ namespace API.Controllers
         [Authorize]
         public async Task<ActionResult<Unit>> DeleteToken(RegisterTokenDto tokenDto)
         {
-            var token = await _context.NotificationTokens.FirstOrDefaultAsync(x => x.Value == tokenDto.Token);
+            var username = User.FindFirstValue(ClaimTypes.Name);
+            if (username == null) return Unauthorized();
+
+            var user = await _userManager.FindByNameAsync(username);
+
+            var token = await _context.NotificationTokens.FirstOrDefaultAsync(x => x.AppUser.UserName == username && x.Value == tokenDto.Token);
 
             if (token == null) return null;
 
