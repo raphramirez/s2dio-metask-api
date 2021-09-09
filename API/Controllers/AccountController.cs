@@ -129,7 +129,7 @@ namespace API.Controllers
             if (changePasswordResult.Succeeded)
             {
                 return Ok(Unit.Value);
-            } 
+            }
             else
             {
                 var apiErrorResponse = new
@@ -171,6 +171,13 @@ namespace API.Controllers
 
             var user = await _userManager.FindByNameAsync(username);
             if (user == null) return Unauthorized();
+
+            // Check if other user has the same token.
+            var tokenThatExistsOnOtherUser = await _context.NotificationTokens.FirstOrDefaultAsync(t => t.AppUser.UserName != user.UserName && t.Value == tokenDto.Token);
+            if (tokenThatExistsOnOtherUser != null)
+            {
+                _context.Remove(tokenThatExistsOnOtherUser);
+            }
 
             var duplicateToken = await _context.NotificationTokens
                 .FirstOrDefaultAsync(t => t.AppUser.UserName == user.UserName && t.Value == tokenDto.Token);
