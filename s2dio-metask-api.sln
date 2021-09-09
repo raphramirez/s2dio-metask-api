@@ -13,7 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{FD8DBDD3-07E6-4C22-B5F5-D5CF8C894B95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationManager", "NotificationManager\NotificationManager.csproj", "{8CEB0BB8-D5BE-4A2F-97C2-E91CFB2B6663}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationManager", "NotificationManager\NotificationManager.csproj", "{8CEB0BB8-D5BE-4A2F-97C2-E91CFB2B6663}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CDEA4B35-D56F-4C5A-BB70-CA2F9C4D8377} = {CDEA4B35-D56F-4C5A-BB70-CA2F9C4D8377}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TasksManager", "TasksManager\TasksManager.csproj", "{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CDEA4B35-D56F-4C5A-BB70-CA2F9C4D8377} = {CDEA4B35-D56F-4C5A-BB70-CA2F9C4D8377}
 	EndProjectSection
@@ -100,6 +105,18 @@ Global
 		{8CEB0BB8-D5BE-4A2F-97C2-E91CFB2B6663}.Release|x64.Build.0 = Release|Any CPU
 		{8CEB0BB8-D5BE-4A2F-97C2-E91CFB2B6663}.Release|x86.ActiveCfg = Release|Any CPU
 		{8CEB0BB8-D5BE-4A2F-97C2-E91CFB2B6663}.Release|x86.Build.0 = Release|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Debug|x64.Build.0 = Debug|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Debug|x86.Build.0 = Debug|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Release|x64.ActiveCfg = Release|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Release|x64.Build.0 = Release|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Release|x86.ActiveCfg = Release|Any CPU
+		{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
