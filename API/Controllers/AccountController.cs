@@ -129,7 +129,7 @@ namespace API.Controllers
             if (changePasswordResult.Succeeded)
             {
                 return Ok(Unit.Value);
-            } 
+            }
             else
             {
                 var apiErrorResponse = new
@@ -172,11 +172,18 @@ namespace API.Controllers
             var user = await _userManager.FindByNameAsync(username);
             if (user == null) return Unauthorized();
 
+            // Check if other user has the same token.
+            var tokenThatExistsOnOtherUser = await _context.NotificationTokens.FirstOrDefaultAsync(t => t.AppUser.UserName != user.UserName && t.Value == tokenDto.Token);
+            if (tokenThatExistsOnOtherUser != null)
+            {
+                _context.Remove(tokenThatExistsOnOtherUser);
+            }
+
             var duplicateToken = await _context.NotificationTokens
                 .FirstOrDefaultAsync(t => t.AppUser.UserName == user.UserName && t.Value == tokenDto.Token);
             if (duplicateToken != null)
             {
-                return Unit.Value;
+                return Ok(Unit.Value);
             }
 
             user.Tokens.Add(new NotificationToken { Value = tokenDto.Token });
@@ -198,7 +205,7 @@ namespace API.Controllers
                 return BadRequest(apiErrorResponse);
             }
 
-            return Unit.Value;
+            return Ok(Unit.Value);
         }
 
         [HttpDelete("tokens/delete")]
@@ -214,7 +221,7 @@ namespace API.Controllers
             var result = await _context.SaveChangesAsync() > 0;
             if (!result) return BadRequest("Failed to delte token.");
 
-            return Unit.Value;
+            return Ok(Unit.Value);
         }
 
         [HttpGet]
