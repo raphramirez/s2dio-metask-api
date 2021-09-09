@@ -9,6 +9,7 @@ namespace API.DTOs
 
         [Required(ErrorMessage = "'Password' must not be empty.")]
         [MinLength(8, ErrorMessage = "Password must contain at least eight characters long")]
+      
         [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$", ErrorMessage = "Password must contain uppercase and lowercase letters and a number.")]
         public string Password { get; set; }
     }
