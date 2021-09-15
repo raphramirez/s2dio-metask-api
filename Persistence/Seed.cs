@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domain;
+using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Persistence
 {
     public class Seed
     {
-        public static async System.Threading.Tasks.Task SeedData(DataContext context, UserManager<AppUser> userManager)
+        public static async System.Threading.Tasks.Task SeedData(PlutoContext context, UserManager<AppUser> userManager)
         {
 
             string[] tasksNames =

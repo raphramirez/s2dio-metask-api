@@ -8,7 +8,7 @@ using Persistence;
 
 namespace Persistence.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(PlutoContext))]
     [Migration("20210827041536_RestructureModels")]
     partial class RestructureModels
     {

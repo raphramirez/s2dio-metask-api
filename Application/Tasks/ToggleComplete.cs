@@ -18,9 +18,9 @@ namespace Application.Tasks
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
-            private readonly DataContext _context;
+            private readonly PlutoContext _context;
             private readonly IUsernameAccessor _usernameAccessor;
-            public Handler(DataContext context, IUsernameAccessor usernameAccessor)
+            public Handler(PlutoContext context, IUsernameAccessor usernameAccessor)
             {
                 _usernameAccessor = usernameAccessor;
                 _context = context;

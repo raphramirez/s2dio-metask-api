@@ -20,7 +20,7 @@ namespace API.Extensions
             {
                 opt.Password.RequireNonAlphanumeric = false;
             })
-            .AddEntityFrameworkStores<DataContext>()
+            .AddEntityFrameworkStores<PlutoContext>()
             .AddSignInManager<SignInManager<AppUser>>();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));

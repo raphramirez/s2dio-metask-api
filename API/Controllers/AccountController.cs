@@ -22,12 +22,12 @@ namespace API.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly TokenService _tokenService;
-        private readonly DataContext _context;
+        private readonly PlutoContext _context;
         private readonly IMapper _mapper;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            TokenService tokenService, DataContext context, IMapper mapper)
+            TokenService tokenService, PlutoContext context, IMapper mapper)
         {
             _tokenService = tokenService;
             _context = context;

@@ -27,7 +27,7 @@ namespace API
 
             try
             {
-                var context = services.GetRequiredService<DataContext>();
+                var context = services.GetRequiredService<PlutoContext>();
                 var userManager = services.GetRequiredService<UserManager<AppUser>>();
 
                 await context.Database.MigrateAsync();

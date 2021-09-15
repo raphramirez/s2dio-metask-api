@@ -23,11 +23,11 @@ namespace Application.Tasks
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
-            private readonly DataContext _context;
+            private readonly PlutoContext _context;
             private readonly IUsernameAccessor _usernameAccessor;
             private readonly FirebaseNotificationService _notificationService;
 
-            public Handler(DataContext context, IUsernameAccessor usernameAccessor, FirebaseNotificationService notificationService)
+            public Handler(PlutoContext context, IUsernameAccessor usernameAccessor, FirebaseNotificationService notificationService)
             {
                 _usernameAccessor = usernameAccessor;
                 _notificationService = notificationService;

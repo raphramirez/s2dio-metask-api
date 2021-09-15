@@ -22,12 +22,12 @@ namespace Application.Tasks
 
         public class Handler : IRequestHandler<Query, Result<List<TaskDto>>>
         {
-            private readonly DataContext _context;
+            private readonly PlutoContext _context;
             private readonly ILogger<List> _logger;
             private readonly IMapper _mapper;
             private readonly IUsernameAccessor _usernameAccessor;
 
-            public Handler(DataContext context, IMapper mapper, IUsernameAccessor usernameAccessor)
+            public Handler(PlutoContext context, IMapper mapper, IUsernameAccessor usernameAccessor)
             {
                 _mapper = mapper;
                 _usernameAccessor = usernameAccessor;

@@ -22,8 +22,8 @@ namespace Application.Tasks
         public class Handler : IRequestHandler<Query, Result<TaskDto>>
         {
             private readonly IMapper _mapper;
-            private readonly DataContext _context;
-            public Handler(DataContext context, IMapper mapper)
+            private readonly PlutoContext _context;
+            public Handler(PlutoContext context, IMapper mapper)
             {
                 _context = context;
                 _mapper = mapper;

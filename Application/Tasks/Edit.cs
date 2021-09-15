@@ -21,11 +21,11 @@ namespace Application.Tasks
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
-            private readonly DataContext _context;
+            private readonly PlutoContext _context;
             private readonly IMapper _mapper;
             private readonly FirebaseNotificationService _notificationService;
 
-            public Handler(DataContext context, IMapper mapper, FirebaseNotificationService notificationService)
+            public Handler(PlutoContext context, IMapper mapper, FirebaseNotificationService notificationService)
             {
                 _context = context;
                 _mapper = mapper;

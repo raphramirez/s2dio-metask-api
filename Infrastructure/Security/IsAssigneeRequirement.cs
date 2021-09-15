@@ -16,10 +16,10 @@ namespace Infrastructure.Security
     }
     public class IsAssigneeRequirementHandler : AuthorizationHandler<IsAssigneeRequirement>
     {
-        private readonly DataContext _context;
+        private readonly PlutoContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IsAssigneeRequirementHandler(DataContext context, IHttpContextAccessor httpContextAccessor)
+        public IsAssigneeRequirementHandler(PlutoContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
