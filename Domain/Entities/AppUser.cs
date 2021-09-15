@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-namespace Domain
+namespace Domain.Entities
 {
     public class AppUser : IdentityUser
     {
