@@ -17,44 +17,74 @@ namespace Persistence.Repositories.Base
         {
             Context = context;
         }
-        public async Task<TEntity> Get(int id)
+
+        public async Task<TEntity> Get(Guid id, params Expression<Func<TEntity, object>>[] includes)
         {
-            return await Context.Set<TEntity>().FindAsync(id);
+            var query = Context.Set<TEntity>();
+
+            return await includes
+                .Aggregate(query, (current, includeProperty) => (DbSet<TEntity>)current.Include(includeProperty))
+                .FindAsync(id);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAll()
+        public async Task<IEnumerable<TEntity>> GetAll(params Expression<Func<TEntity, object>>[] includes)
         {
-            return await Context.Set<TEntity>().ToListAsync();
+            var query = Context.Set<TEntity>().AsQueryable();
+
+            return await includes
+                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty))
+                .ToListAsync();
         }
 
-        public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
+        public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
-            return Context.Set<TEntity>().Where(predicate);
+            var query = Context.Set<TEntity>().AsQueryable();
+
+            return includes
+                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty))
+                .Where(predicate);
         }
 
-        public async Task<TEntity> SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
+        public async Task<TEntity> SingleOrDefault(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
-            return await Context.Set<TEntity>().SingleOrDefaultAsync(predicate);
+            var query = Context.Set<TEntity>().AsQueryable();
+
+            return await includes
+                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty))
+                .SingleOrDefaultAsync(predicate);
         }
 
-        public async Task Add(TEntity entity)
+        public async Task<TEntity> FirstOrDefault(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
+        {
+            var query = Context.Set<TEntity>().AsQueryable();
+
+            return await includes
+                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty))
+                .FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task<int> Add(TEntity entity)
         {
             await Context.Set<TEntity>().AddAsync(entity);
+            return await Context.SaveChangesAsync();
         }
 
-        public async Task AddRange(IEnumerable<TEntity> entities)
+        public async Task<int> AddRange(IEnumerable<TEntity> entities)
         {
             await Context.Set<TEntity>().AddRangeAsync(entities);
+            return await Context.SaveChangesAsync();
         }
 
-        public void Remove(TEntity entity)
+        public async Task<int> Remove(TEntity entity)
         {
             Context.Set<TEntity>().Remove(entity);
+            return await Context.SaveChangesAsync();
         }
 
-        public void RemoveRange(IEnumerable<TEntity> entities)
+        public async Task<int> RemoveRange(IEnumerable<TEntity> entities)
         {
             Context.Set<TEntity>().RemoveRange(entities);
+            return await Context.SaveChangesAsync();
         }
     }
 }

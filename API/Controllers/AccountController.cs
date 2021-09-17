@@ -7,7 +7,7 @@ using API.DTOs;
 using API.Services;
 using Application.Notifications;
 using AutoMapper;
-using Domain;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

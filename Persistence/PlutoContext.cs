@@ -12,7 +12,6 @@ namespace Persistence
         public DbSet<Task> Tasks { get; set; }
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<NotificationToken> NotificationTokens { get; set; }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

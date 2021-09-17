@@ -7,6 +7,7 @@ using Application.Core;
 using Application.Interfaces;
 using Application.Notifications;
 using Domain;
+using Domain.Repositories;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,20 +19,24 @@ namespace Application.Tasks
     {
         public class Command : IRequest<Result<Unit>>
         {
-            public Domain.Task Task { get; set; }
+            public Domain.Entities.Task Task { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
-            private readonly PlutoContext _context;
+            private readonly ITaskRepository _taskRepository;
+            private readonly IUserRepository _userRepository;
+            private readonly INotificationTokenRepository _notificationTokenRepository;
             private readonly IUsernameAccessor _usernameAccessor;
             private readonly FirebaseNotificationService _notificationService;
 
-            public Handler(PlutoContext context, IUsernameAccessor usernameAccessor, FirebaseNotificationService notificationService)
+            public Handler(ITaskRepository taskRepository, IUserRepository userRepository, INotificationTokenRepository notificationTokenRepository, IUsernameAccessor usernameAccessor, FirebaseNotificationService notificationService)
             {
+                _taskRepository = taskRepository;
+                _userRepository = userRepository;
+                _notificationTokenRepository = notificationTokenRepository;
                 _usernameAccessor = usernameAccessor;
                 _notificationService = notificationService;
-                _context = context;
             }
 
             public class CommandValidator : AbstractValidator<Command>
@@ -45,12 +50,10 @@ namespace Application.Tasks
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 // get created by
-                var createdBy = await _context.Users
-                    .FirstOrDefaultAsync(user => user.UserName == _usernameAccessor.getUsername());
+                var createdBy = await _userRepository.GetByUsername(_usernameAccessor.getUsername());
 
                 // get assignee
-                var assignee = await _context.Users
-                    .FirstOrDefaultAsync(user => user.UserName == request.Task.Assignee.UserName);
+                var assignee = await _userRepository.GetByUsername(request.Task.Assignee.UserName);
 
                 if (assignee == null) return null;
 
@@ -62,21 +65,16 @@ namespace Application.Tasks
 
                 request.Task.IsCompleted = false;
 
-                _context.Tasks.Add(request.Task);
+                var result = _taskRepository.Add(request.Task);
 
-                var result = await _context.SaveChangesAsync() > 0;
-
-                if (!result) return Result<Unit>.Failure("Failed to create task");
+                if (!(result.Result > 0)) return Result<Unit>.Failure("Failed to create task");
 
                 // Notify assignee
-                var regTokens = await _context.NotificationTokens
-                    .Where(x => x.AppUser.UserName == assignee.UserName)
-                    .Select(t => t.Value)
-                    .ToListAsync();
-                if (regTokens.Count > 0)
+                var regTokens = await _notificationTokenRepository.GetUserTokens(assignee);
+                if (regTokens.Any())
                 {
                     await FirebaseNotificationService.CreateNotificationAsync(
-                        regTokens,
+                        regTokens.ToList(),
                         "Metask",
                         $"You have a new task: {request.Task.Name}"
                     );

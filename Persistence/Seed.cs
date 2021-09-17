@@ -68,7 +68,7 @@ namespace Persistence
                 }
 
                 int daysInSept = DateTime.DaysInMonth(2021, 9);
-                var tasks = new List<Domain.Task>();
+                var tasks = new List<Domain.Entities.Task>();
 
                 var userIndex = 0;
 
@@ -80,7 +80,7 @@ namespace Persistence
                     {
                         if (userIndex < 0 || userIndex > users.Count - 1) userIndex = 0;
 
-                        tasks.Add(new Domain.Task
+                        tasks.Add(new Domain.Entities.Task
                         {
                             Name = tasksNames[i],
                             Description = "Daily tasks.",

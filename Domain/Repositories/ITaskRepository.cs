@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,8 +10,9 @@ namespace Domain.Repositories
 {
     public interface ITaskRepository : IRepository<Entities.Task>
     {
-        Task<IEnumerable<Entities.Task>> GetByCreator(Entities.AppUser user);
-        Task<IEnumerable<Entities.Task>> GetByAssignee(Entities.AppUser user);
-        Task<IEnumerable<Entities.Task>> GetByDate(DateTime date);
+        Task<IEnumerable<Entities.Task>> GetByCreator(Entities.AppUser creator);
+        Task<IEnumerable<Entities.Task>> GetByAssignee(Entities.AppUser assignee);
+        Task<IEnumerable<Entities.Task>> GetByDate(DateTime date, params Expression<Func<Entities.Task, object>>[] includes);
+        Task<int> ToggleComplete(Entities.Task task);
     }
 }
