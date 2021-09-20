@@ -16,10 +16,10 @@ namespace Infrastructure.Security
     }
     public class IsCreatorRequirementHandler : AuthorizationHandler<IsCreatorRequirement>
     {
-        private readonly DataContext _context;
+        private readonly PlutoContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IsCreatorRequirementHandler(DataContext context, IHttpContextAccessor httpContextAccessor)
+        public IsCreatorRequirementHandler(PlutoContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;

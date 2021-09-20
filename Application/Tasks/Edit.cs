@@ -1,6 +1,7 @@
 ﻿using Application.Core;
 using Application.Notifications;
 using AutoMapper;
+using Domain.Repositories;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -16,18 +17,21 @@ namespace Application.Tasks
     {
         public class Command : IRequest<Result<Unit>>
         {
-            public Domain.Task Task { get; set; }
+            public Domain.Entities.Task Task { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
-            private readonly DataContext _context;
+            private readonly PlutoContext _context;
+            private readonly ITaskRepository _taskRepository;
+            private readonly IUserRepository _userRepository;
             private readonly IMapper _mapper;
             private readonly FirebaseNotificationService _notificationService;
 
-            public Handler(DataContext context, IMapper mapper, FirebaseNotificationService notificationService)
+            public Handler(ITaskRepository taskRepository, IUserRepository userRepository, IMapper mapper, FirebaseNotificationService notificationService)
             {
-                _context = context;
+                _taskRepository = taskRepository;
+                _userRepository = userRepository;
                 _mapper = mapper;
                 _notificationService = notificationService;
             }
@@ -42,16 +46,14 @@ namespace Application.Tasks
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var task = await _context.Tasks
-                    .Include(a => a.Assignee)
-                    .FirstOrDefaultAsync(x => x.Id == request.Task.Id);
+                var task = await _taskRepository.FirstOrDefault(x => x.Id == request.Task.Id, x => x.Assignee);
 
                 if (task == null) return null;
 
-                var oldAssignee = await _context.Users.FirstOrDefaultAsync(user => user.UserName == request.Task.Assignee.UserName);
+                var oldAssignee = await _userRepository.FirstOrDefault(user => user.UserName == request.Task.Assignee.UserName);
 
                 // get new assignee
-                var assignee = await _context.Users.FirstOrDefaultAsync(user => user.UserName == request.Task.Assignee.UserName);
+                var assignee = await _userRepository.FirstOrDefault(user => user.UserName == request.Task.Assignee.UserName);
                 if (assignee == null) return Result<Unit>.Failure("Assignee does not exists.");
 
                 bool assigneeChanged = false;

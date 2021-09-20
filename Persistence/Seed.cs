@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domain;
+using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Persistence
 {
     public class Seed
     {
-        public static async System.Threading.Tasks.Task SeedData(DataContext context, UserManager<AppUser> userManager)
+        public static async System.Threading.Tasks.Task SeedData(PlutoContext context, UserManager<AppUser> userManager)
         {
 
             string[] tasksNames =
@@ -68,7 +68,7 @@ namespace Persistence
                 }
 
                 int daysInSept = DateTime.DaysInMonth(2021, 9);
-                var tasks = new List<Domain.Task>();
+                var tasks = new List<Domain.Entities.Task>();
 
                 var userIndex = 0;
 
@@ -80,7 +80,7 @@ namespace Persistence
                     {
                         if (userIndex < 0 || userIndex > users.Count - 1) userIndex = 0;
 
-                        tasks.Add(new Domain.Task
+                        tasks.Add(new Domain.Entities.Task
                         {
                             Name = tasksNames[i],
                             Description = "Daily tasks.",

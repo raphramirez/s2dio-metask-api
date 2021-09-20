@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using API.Services;
-using Domain;
+using Domain.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -27,7 +21,7 @@ namespace API
 
             try
             {
-                var context = services.GetRequiredService<DataContext>();
+                var context = services.GetRequiredService<PlutoContext>();
                 var userManager = services.GetRequiredService<UserManager<AppUser>>();
 
                 await context.Database.MigrateAsync();

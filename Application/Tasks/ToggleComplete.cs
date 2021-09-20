@@ -1,5 +1,6 @@
 ﻿using Application.Core;
 using Application.Interfaces;
+using Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -18,26 +19,26 @@ namespace Application.Tasks
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
-            private readonly DataContext _context;
+            private readonly IUserRepository _userRepository;
+            private readonly ITaskRepository _taskRepository;
             private readonly IUsernameAccessor _usernameAccessor;
-            public Handler(DataContext context, IUsernameAccessor usernameAccessor)
+            public Handler(IUserRepository userRepository, ITaskRepository taskRepository, IUsernameAccessor usernameAccessor)
             {
+                _userRepository = userRepository;
+                _taskRepository = taskRepository;
                 _usernameAccessor = usernameAccessor;
-                _context = context;
             }
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 // get user
-                var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == _usernameAccessor.getUsername());
+                var user = await _userRepository.FirstOrDefault(u => u.UserName == _usernameAccessor.getUsername());
 
                 // get task
-                var task = await _context.Tasks.FindAsync(request.Id);
+                var task = await _taskRepository.Get(request.Id);
                 if (task == null) return null;
 
-                task.IsCompleted = !task.IsCompleted;
-
-                var result = await _context.SaveChangesAsync() > 0;
+                var result = await _taskRepository.ToggleComplete(task) > 0;
 
                 if (!result) return Result<Unit>.Failure("Failed to create task");
 
