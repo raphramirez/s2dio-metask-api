@@ -20,5 +20,14 @@ namespace Persistence.Repositories
         {
             return await _context.AppUsers.SingleOrDefaultAsync(user => user.UserName == username);
         }
+
+        public async Task<int> AddToken(AppUser user, string token)
+        {
+            var appUser = Get(Guid.Parse(user.Id)).Result;
+
+            appUser.Tokens.Add(new NotificationToken { Value = token });
+
+            return await _context.SaveChangesAsync();
+        }
     }
 }

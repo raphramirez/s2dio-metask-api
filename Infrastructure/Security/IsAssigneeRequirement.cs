@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Domain.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -16,12 +17,12 @@ namespace Infrastructure.Security
     }
     public class IsAssigneeRequirementHandler : AuthorizationHandler<IsAssigneeRequirement>
     {
-        private readonly PlutoContext _context;
+        private readonly ITaskRepository _taskRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IsAssigneeRequirementHandler(PlutoContext context, IHttpContextAccessor httpContextAccessor)
+        public IsAssigneeRequirementHandler(ITaskRepository taskRepository, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _taskRepository = taskRepository;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -33,9 +34,7 @@ namespace Infrastructure.Security
 
             var taskId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value?.ToString());
 
-            var task = _context.Tasks
-                .AsNoTracking()
-                .SingleOrDefaultAsync(x => x.Id == taskId).Result;
+            var task = _taskRepository.SingleOrDefault(t => t.Id == taskId).Result;
 
             if (task == null) return Task.CompletedTask;
 

@@ -11,5 +11,6 @@ namespace Domain.Repositories
     public interface IUserRepository : IRepository<AppUser>
     {
         Task<AppUser> GetByUsername(string username);
+        Task<int> AddToken(AppUser user, string token);
     }
 }

@@ -70,6 +70,8 @@ namespace API
 
             services.AddSingleton<FirebaseNotificationService>();
             services.AddTransient<ITaskRepository, TaskRepository>();
+            services.AddTransient<INotificationTokenRepository, NotificationTokenRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
