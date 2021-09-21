@@ -1,6 +1,6 @@
 using System.Text;
 using API.Services;
-using Domain;
+using Domain.Entities;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +20,7 @@ namespace API.Extensions
             {
                 opt.Password.RequireNonAlphanumeric = false;
             })
-            .AddEntityFrameworkStores<DataContext>()
+            .AddEntityFrameworkStores<PlutoContext>()
             .AddSignInManager<SignInManager<AppUser>>();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));

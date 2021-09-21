@@ -7,7 +7,8 @@ using API.DTOs;
 using API.Services;
 using Application.Notifications;
 using AutoMapper;
-using Domain;
+using Domain.Entities;
+using Domain.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,20 +20,22 @@ namespace API.Controllers
 {
     public class AccountController : BaseApiController
     {
+        private readonly IUserRepository _userRepository;
+        private readonly INotificationTokenRepository _notificationTokenRepository;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly TokenService _tokenService;
-        private readonly DataContext _context;
         private readonly IMapper _mapper;
 
-        public AccountController(UserManager<AppUser> userManager,
+        public AccountController(IUserRepository userRepository, INotificationTokenRepository notificationTokenRepository, UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            TokenService tokenService, DataContext context, IMapper mapper)
+            TokenService tokenService, IMapper mapper)
         {
             _tokenService = tokenService;
-            _context = context;
             _mapper = mapper;
             _signInManager = signInManager;
+            _userRepository = userRepository;
+            _notificationTokenRepository = notificationTokenRepository;
             _userManager = userManager;
         }
 
@@ -40,7 +43,7 @@ namespace API.Controllers
         [Authorize]
         public async Task<List<Application.Profiles.Profile>> GetAppUsers()
         {
-            var users = await _context.AppUsers.ToListAsync();
+            var users = await _userRepository.GetAll();
 
             var usersToReturn = _mapper.Map<List<Application.Profiles.Profile>>(users);
 
@@ -152,10 +155,7 @@ namespace API.Controllers
 
             if (user == null) return NotFound();
 
-            var tokens = await _context.NotificationTokens
-                  .Include(a => a.AppUser)
-                  .Where(t => t.AppUser.UserName == usernameDto.Username)
-                  .ToListAsync();
+            var tokens = _notificationTokenRepository.Find(token => token.AppUser.UserName == usernameDto.Username, x => x.AppUser);
 
             var tokensToReturn = _mapper.Map<List<NotificationTokenDto>>(tokens);
 
@@ -173,14 +173,14 @@ namespace API.Controllers
             if (user == null) return Unauthorized();
 
             // Check if other user has the same token.
-            var tokenThatExistsOnOtherUser = await _context.NotificationTokens.FirstOrDefaultAsync(t => t.AppUser.UserName != user.UserName && t.Value == tokenDto.Token);
+            var tokenThatExistsOnOtherUser = await _notificationTokenRepository.FirstOrDefault(t => t.AppUser.UserName != user.UserName && t.Value == tokenDto.Token);
             if (tokenThatExistsOnOtherUser != null)
             {
-                _context.Remove(tokenThatExistsOnOtherUser);
+                await _notificationTokenRepository.Remove(tokenThatExistsOnOtherUser);
             }
 
-            var duplicateToken = await _context.NotificationTokens
-                .FirstOrDefaultAsync(t => t.AppUser.UserName == user.UserName && t.Value == tokenDto.Token);
+            var duplicateToken = await _notificationTokenRepository
+                .FirstOrDefault(t => t.AppUser.UserName == user.UserName && t.Value == tokenDto.Token);
             if (duplicateToken != null)
             {
                 return Ok(Unit.Value);
@@ -188,7 +188,7 @@ namespace API.Controllers
 
             user.Tokens.Add(new NotificationToken { Value = tokenDto.Token });
 
-            var result = await _context.SaveChangesAsync() > 0;
+            var result = await _userRepository.AddToken(user, tokenDto.Token) > 0;
             if (!result)
             {
                 var apiErrorResponse = new
@@ -217,13 +217,12 @@ namespace API.Controllers
 
             var user = await _userManager.FindByNameAsync(username);
 
-            var token = await _context.NotificationTokens.FirstOrDefaultAsync(x => x.AppUser.UserName == username && x.Value == tokenDto.Token);
+            var token = await _notificationTokenRepository.FirstOrDefault(t => t.AppUser.UserName == username && t.Value == tokenDto.Token);
 
             if (token == null) return null;
 
-            _context.Remove(token);
+            var result = await _notificationTokenRepository.Remove(token) > 0;
 
-            var result = await _context.SaveChangesAsync() > 0;
             if (!result) return BadRequest("Failed to delte token.");
 
             return Ok(Unit.Value);

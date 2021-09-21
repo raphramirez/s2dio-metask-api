@@ -1,7 +1,7 @@
 using Application.Notifications;
 using Application.Tasks;
 using AutoMapper;
-using Domain;
+using Domain.Entities;
 
 namespace Application.Core
 {

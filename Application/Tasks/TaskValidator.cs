@@ -1,4 +1,4 @@
-using Domain;
+using Domain.Entities;
 using FluentValidation;
 
 namespace Application.Tasks
