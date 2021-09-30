@@ -1,10 +1,9 @@
 using Domain.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence
 {
-    public class PlutoContext : IdentityDbContext<AppUser>
+    public class PlutoContext : DbContext
     {
         public PlutoContext(DbContextOptions options) : base(options)
         {

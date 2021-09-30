@@ -22,10 +22,8 @@ namespace API
             try
             {
                 var context = services.GetRequiredService<PlutoContext>();
-                var userManager = services.GetRequiredService<UserManager<AppUser>>();
 
                 await context.Database.MigrateAsync();
-                await Seed.SeedData(context, userManager);
             }
             catch (Exception e)
             {
