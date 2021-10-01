@@ -10,6 +10,7 @@ namespace API.Controllers
     public class TasksController : BaseApiController
     {
         [HttpGet]
+        [Authorize(Policy = "ReadAccess")]
         public async Task<IActionResult> GetTasks([FromQuery] TaskParams param)
         {
             return HandleResult(await Mediator.Send(new List.Query { Params = param }));
