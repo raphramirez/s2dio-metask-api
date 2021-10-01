@@ -25,12 +25,45 @@ namespace API.Extensions
                 {
                     policy.Requirements.Add(new IsAssigneeRequirement());
                 });
-                options.AddPolicy("read:tasks", policy => policy.Requirements.Add(new HasScopeRequirement("read:tasks", domain)));
+
+                // setting up policies for tasks
+                options.AddPolicy("ReadAccess", policy => 
+                    policy.RequireAssertion(context =>
+                       context.User.HasClaim(claim =>
+                         (claim.Type == "permissions" &&
+                          (claim.Value == "read:tasks") &&
+                          claim.Issuer == $"https://{config["Auth0:Domain"]}/"
+                         )
+                       )
+                    )
+                  );
+
+                options.AddPolicy("WriteAccess", policy => 
+                    policy.RequireAssertion(context =>
+                       context.User.HasClaim(claim =>
+                         (claim.Type == "permissions" &&
+                          (claim.Value == "create:tasks" ||
+                           claim.Value == "update:tasks") &&
+                          claim.Issuer == $"https://{config["Auth0:Domain"]}/"
+                         )
+                       )
+                    )
+                  );
+
+                  options.AddPolicy("DeleteAccess", policy => 
+                    policy.RequireAssertion(context =>
+                       context.User.HasClaim(claim =>
+                         (claim.Type == "permissions" &&
+                          (claim.Value == "delete:tasks") &&
+                          claim.Issuer == $"https://{config["Auth0:Domain"]}/"
+                         )
+                       )
+                    )
+                  );
             });
 
             services.AddTransient<IAuthorizationHandler, IsCreatorRequirementHandler>();
             services.AddTransient<IAuthorizationHandler, IsAssigneeRequirementHandler>();
-            services.AddSingleton<IAuthorizationHandler, HasScopeRequirementHandler>();
 
             return services;
         }
