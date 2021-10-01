@@ -1,7 +1,5 @@
 using API.Extensions;
 using API.Middleware;
-using API.Services;
-using Application.Core;
 using Application.Notifications;
 using Application.Tasks;
 using Domain.Repositories;
@@ -66,7 +64,8 @@ namespace API
                 };
             });
             services.AddApplicationServices(_config);
-            services.AddIdentityServices(_config);
+            services.AddAuthenticationWithAuth0(_config);
+            services.AddPolicies(_config);
 
             services.AddSingleton<FirebaseNotificationService>();
             services.AddTransient<ITaskRepository, TaskRepository>();
@@ -84,6 +83,9 @@ namespace API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
+
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
 
             app.UseRouting();
 
