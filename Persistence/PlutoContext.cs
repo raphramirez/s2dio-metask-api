@@ -15,10 +15,22 @@ namespace Persistence
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Task>()
-              .HasOne<AppUser>(u => u.Assignee)
-              .WithMany(t => t.Tasks)
-              .HasForeignKey(s => s.AssigneeId);
+      //builder.Entity<Task>()
+      //  .HasOne<AppUser>(u => u.Assignee)
+      //  .WithMany(t => t.Tasks)
+      //  .HasForeignKey(s => s.AssigneeId);
+
+            builder.Entity<UserTask>().HasKey(sc => new { sc.AppUserId, sc.TaskId });
+
+            builder.Entity<UserTask>()
+                .HasOne<AppUser>(u => u.AppUser)
+                .WithMany(u => u.UserTasks)
+                .HasForeignKey(ut => ut.AppUserId);
+
+            builder.Entity<UserTask>()
+                .HasOne<Task>(t => t.Task)
+                .WithMany(t => t.UserTasks)
+                .HasForeignKey(ut => ut.TaskId);
         }
     }
 }

@@ -9,18 +9,15 @@ namespace Application.Core
     {
         public MappingProfiles()
         {
-            CreateMap<Task, Task>();
+            //CreateMap<Task, Task>();
 
-            CreateMap<Task, TaskDto>()
-                .ForMember(d => d.Assignee, o => o.MapFrom(s => s.Assignee))
-                .ForMember(d => d.CreatedBy, o => o.MapFrom(s => s.CreatedBy));
+            //CreateMap<Task, TaskDto>()
+            //    .ForMember(d => d.Assignee, o => o.MapFrom(s => s.Assignee))
+            //    .ForMember(d => d.CreatedBy, o => o.MapFrom(s => s.CreatedBy));
 
-            CreateMap<AppUser, Profiles.Profile>()
-            .ForMember(d => d.Username, o => o.MapFrom(s => s.UserName));
-
-            CreateMap<NotificationToken, NotificationTokenDto>()
-                .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.UserName))
-                .ForMember(d => d.Token, o => o.MapFrom(s => s.Value));
+            //CreateMap<NotificationToken, NotificationTokenDto>()
+            //    .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.Nickname))
+            //    .ForMember(d => d.Token, o => o.MapFrom(s => s.Value));
         }
     }
 }

@@ -18,36 +18,14 @@ namespace Persistence.Repositories
             _context = context;
         }
 
-        public async System.Threading.Tasks.Task<IEnumerable<Task>> GetByAssignee(AppUser assignee)
+        public System.Threading.Tasks.Task<IEnumerable<Task>> GetByDate(DateTime date, params Expression<Func<Task, object>>[] includes)
         {
-            return await _context.Tasks
-                .Include(task => task.Assignee)
-                .Where(task => task.Assignee.UserName == assignee.UserName)
-                .ToListAsync();
+            throw new NotImplementedException();
         }
 
-        public async System.Threading.Tasks.Task<IEnumerable<Task>> GetByCreator(AppUser creator)
+        public System.Threading.Tasks.Task<int> ToggleComplete(Task task)
         {
-            return await _context.Tasks
-                .Include(task => task.CreatedBy)
-                .Where(task => task.CreatedBy.UserName == creator.UserName)
-                .ToListAsync();
-        }
-
-        public async System.Threading.Tasks.Task<IEnumerable<Task>> GetByDate(DateTime date, params Expression<Func<Task, object>>[] includes)
-        {
-            var query = _context.Tasks
-                .OrderBy(t => t.Date)
-                .Where(t => t.Date >= date && t.Date < date.AddDays(1));
-
-            return await includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty)).ToListAsync();
-        }
-
-        public async System.Threading.Tasks.Task<int> ToggleComplete(Task task)
-        {
-            task.IsCompleted = !task.IsCompleted;
-
-            return await _context.SaveChangesAsync();
+            throw new NotImplementedException();
         }
     }
 }

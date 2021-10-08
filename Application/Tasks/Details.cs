@@ -3,12 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Domain;
 using Domain.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Tasks
 {
@@ -31,12 +27,12 @@ namespace Application.Tasks
 
             public async Task<Result<TaskDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var task = await _taskRepository
-                    .FirstOrDefault(task => task.Id == request.Id, t => t.Assignee, t => t.CreatedBy);
+                //var task = await _taskRepository
+                //    .FirstOrDefault(task => task.Id == request.Id, t => t.Assignee, t => t.CreatedBy);
 
-                var taskToReturn = _mapper.Map<TaskDto>(task);
+                //var taskToReturn = _mapper.Map<TaskDto>(task);
 
-                return Result<TaskDto>.Success(taskToReturn);
+                return Result<TaskDto>.Success(null);
             }
         }
     }

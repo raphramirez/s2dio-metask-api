@@ -9,95 +9,99 @@ namespace Persistence
 {
     public class Seed
     {
-        public static async System.Threading.Tasks.Task SeedData(PlutoContext context, UserManager<AppUser> userManager)
+        public static async void SeedData(PlutoContext context, UserManager<AppUser> userManager)
         {
+            //string[] tasksNames =
+            //{
+            //    "Dishwashing",
+            //    "Cleaning",
+            //    "CR",
+            //    "Trash",
+            //    "Kitchen",
+            //    "Coffee Cleaning",
+            //    "Rice Management",
+            //    "Stock Management",
+            //};
 
-            string[] tasksNames =
-            {
-                "Dishwashing",
-                "Cleaning",
-                "CR",
-                "Trash",
-                "Kitchen",
-                "Coffee Cleaning",
-                "Rice Management",
-                "Stock Management",
-            };
+            //if (!context.Tasks.Any() && !userManager.Users.Any())
+            //{
+            //    var users = new List<AppUser>
+            //    {
+            //        new AppUser
+            //        {
+            //            UserName = "elbert"
+            //        },
+            //        new AppUser
+            //        {
+            //            UserName = "russel"
+            //        },
+            //        new AppUser
+            //        {
+            //            UserName = "jhie"
+            //        },
+            //        new AppUser
+            //        {
+            //            UserName = "genesis"
+            //        },
+            //        new AppUser
+            //        {
+            //            UserName = "raph"
+            //        },
+            //        new AppUser
+            //        {
+            //            UserName = "hanz"
+            //        },
+            //        new AppUser
+            //        {
+            //            UserName = "jude"
+            //        },
+            //        new AppUser
+            //        {
+            //            UserName = "jade"
+            //        },
+            //    };
 
-            if (!context.Tasks.Any() && !userManager.Users.Any())
-            {
-                var users = new List<AppUser>
-                {
-                    new AppUser
-                    {
-                        UserName = "elbert"
-                    },
-                    new AppUser
-                    {
-                        UserName = "russel"
-                    },
-                    new AppUser
-                    {
-                        UserName = "jhie"
-                    },
-                    new AppUser
-                    {
-                        UserName = "genesis"
-                    },
-                    new AppUser
-                    {
-                        UserName = "raph"
-                    },
-                    new AppUser
-                    {
-                        UserName = "hanz"
-                    },
-                    new AppUser
-                    {
-                        UserName = "jude"
-                    },
-                    new AppUser
-                    {
-                        UserName = "jade"
-                    },
-                };
+            //    foreach (var user in users)
+            //    {
+            //        await userManager.CreateAsync(user, "Pa$$w0rd");
+            //    }
 
-                foreach (var user in users)
-                {
-                    await userManager.CreateAsync(user, "Pa$$w0rd");
-                }
+            //    int daysInSept = DateTime.DaysInMonth(2021, 9);
+            //    var tasks = new List<Domain.Entities.Task>();
 
-                int daysInSept = DateTime.DaysInMonth(2021, 9);
-                var tasks = new List<Domain.Entities.Task>();
+            //    var userIndex = 0;
 
-                var userIndex = 0;
+            //    // Month of Sept
+            //    for (int day = 1; day <= daysInSept; day++)
+            //    {
+            //        userIndex--;
+            //        for (int i = 0; i < tasksNames.Length; i++)
+            //        {
+            //            if (userIndex < 0 || userIndex > users.Count - 1) userIndex = 0;
 
-                // Month of Sept
-                for (int day = 1; day <= daysInSept; day++)
-                {
-                    userIndex--;
-                    for (int i = 0; i < tasksNames.Length; i++)
-                    {
-                        if (userIndex < 0 || userIndex > users.Count - 1) userIndex = 0;
+            //            tasks.Add(new Domain.Entities.Task
+            //            {
+            //                Name = tasksNames[i],
+            //                Description = "Daily tasks.",
+            //                Date = new DateTime(2021, 09, day, 8, 0, 0),
+            //                CreatedBy = users[7],
+            //                DateCreated = DateTime.Now,
+            //                Assignee = users[userIndex],
+            //                IsCompleted = false,
+            //            });
 
-                        tasks.Add(new Domain.Entities.Task
-                        {
-                            Name = tasksNames[i],
-                            Description = "Daily tasks.",
-                            Date = new DateTime(2021, 09, day, 8, 0, 0),
-                            CreatedBy = users[7],
-                            DateCreated = DateTime.Now,
-                            Assignee = users[userIndex],
-                            IsCompleted = false,
-                        });
+            //            userIndex++;
+            //        }
+            //    }
 
-                        userIndex++;
-                    }
-                }
+            //    await context.Tasks.AddRangeAsync(tasks);
 
-                await context.Tasks.AddRangeAsync(tasks);
-                await context.SaveChangesAsync();
-            }
+            var tasks = new List<Domain.Entities.Task>();
+
+            // Test Tasks
+
+            await context.Tasks.AddRangeAsync(tasks);
+            await context.SaveChangesAsync();
         }
     }
 }
