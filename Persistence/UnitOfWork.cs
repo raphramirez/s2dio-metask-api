@@ -16,11 +16,11 @@ namespace Persistence
         {
             _context = context;
             Tasks = new TaskRepository(_context);
-            AppUsers = new UserRepository(_context);
+            Users = new UserRepository(_context);
         }
         public ITaskRepository Tasks { get; private set; }
+        public IUserRepository Users { get; private set; }
 
-        public IUserRepository AppUsers { get; private set; }
         public Task<int> Completed()
         {
             return _context.SaveChangesAsync();

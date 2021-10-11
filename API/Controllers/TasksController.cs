@@ -17,6 +17,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "ReadAccess")]
         public async Task<IActionResult> GetTask(Guid id)
         {
             return HandleResult(await Mediator.Send(new Details.Query { Id = id }));

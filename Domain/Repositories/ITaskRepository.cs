@@ -10,8 +10,6 @@ namespace Domain.Repositories
 {
     public interface ITaskRepository : IRepository<Entities.Task>
     {
-        Task<IEnumerable<Entities.Task>> GetByCreator(Entities.AppUser creator);
-        Task<IEnumerable<Entities.Task>> GetByAssignee(Entities.AppUser assignee);
         Task<IEnumerable<Entities.Task>> GetByDate(DateTime date, params Expression<Func<Entities.Task, object>>[] includes);
         Task<int> ToggleComplete(Entities.Task task);
     }

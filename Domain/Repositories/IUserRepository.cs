@@ -1,16 +1,8 @@
-﻿using Domain.Entities;
-using Domain.Repositories.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Repositories.Base;
 
 namespace Domain.Repositories
 {
-    public interface IUserRepository : IRepository<AppUser>
+    public interface IUserRepository : IRepository<Entities.AppUser>
     {
-        Task<AppUser> GetByUsername(string username);
-        Task<int> AddToken(AppUser user, string token);
     }
 }

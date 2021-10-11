@@ -17,53 +17,53 @@ namespace NotificationManager
 
         static async System.Threading.Tasks.Task Main(string[] args)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(URL);
+            //HttpClient client = new HttpClient();
+            //client.BaseAddress = new Uri(URL);
 
-            firebaseNotification = new FirebaseNotificationService();
+            //firebaseNotification = new FirebaseNotificationService();
 
-            // Login
-            var jsonLogin = JsonConvert.SerializeObject(new Login { Username = "raph", Password = "Pa$$w0rd" });
-            var data = new StringContent(jsonLogin, Encoding.UTF8, "application/json");
-            var loginResponse = await client.PostAsync(URL + "/account/login", data);
-            string result = loginResponse.Content.ReadAsStringAsync().Result;
-            var loggedInUser = JsonConvert.DeserializeObject<User>(result);
-            var token = loggedInUser.Token;
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            //// Login
+            //var jsonLogin = JsonConvert.SerializeObject(new Login { Username = "raph", Password = "Pa$$w0rd" });
+            //var data = new StringContent(jsonLogin, Encoding.UTF8, "application/json");
+            //var loginResponse = await client.PostAsync(URL + "/account/login", data);
+            //string result = loginResponse.Content.ReadAsStringAsync().Result;
+            //var loggedInUser = JsonConvert.DeserializeObject<User>(result);
+            //var token = loggedInUser.Token;
+            //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            // Get Tasks for today
-            var tasksResponse = await client.GetAsync(URL + "/tasks?showall=true");
-            string taskResult = tasksResponse.Content.ReadAsStringAsync().Result;
+            //// Get Tasks for today
+            //var tasksResponse = await client.GetAsync(URL + "/tasks?showall=true");
+            //string taskResult = tasksResponse.Content.ReadAsStringAsync().Result;
 
-            var tasks = JsonConvert.DeserializeObject<List<Task>>(taskResult);
+            //var tasks = JsonConvert.DeserializeObject<List<Task>>(taskResult);
 
-            var groupedTasksByUser = tasks
-                .GroupBy(u => u.Assignee.Username)
-                .Select(group => group.ToList())
-                .ToList();
+            //var groupedTasksByUser = tasks
+            //    .GroupBy(u => u.Assignee.Username)
+            //    .Select(group => group.ToList())
+            //    .ToList();
 
-            foreach (var list in groupedTasksByUser)
-            {
-                var taskTitles = new StringBuilder();
-                string currentUsername = null;
-                foreach (var task in list)
-                {
-                    taskTitles.AppendLine($"- {task.Name}");
-                    currentUsername = task.Assignee.Username;
-                }
+            //foreach (var list in groupedTasksByUser)
+            //{
+            //    var taskTitles = new StringBuilder();
+            //    string currentUsername = null;
+            //    foreach (var task in list)
+            //    {
+            //        taskTitles.AppendLine($"- {task.Name}");
+            //        currentUsername = task.Assignee.Username;
+            //    }
 
-                var userTokens = (await GetUserTokens(client, currentUsername))
-                    ?.Select(t => t.Token).ToList();
+            //    var userTokens = (await GetUserTokens(client, currentUsername))
+            //        ?.Select(t => t.Token).ToList();
 
-                if (userTokens.Count > 0)
-                {
-                    await FirebaseNotificationService.CreateNotificationAsync(
-                        userTokens,
-                        "Today's task",
-                        taskTitles.ToString()
-                    );
-                }
-            }
+            //    if (userTokens.Count > 0)
+            //    {
+            //        await FirebaseNotificationService.CreateNotificationAsync(
+            //            userTokens,
+            //            "Today's task",
+            //            taskTitles.ToString()
+            //        );
+            //    }
+            //}
         }
 
         public static async Task<List<NotificationToken>> GetUserTokens(HttpClient client, string username)

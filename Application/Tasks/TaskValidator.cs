@@ -8,7 +8,7 @@ namespace Application.Tasks
         public TaskValidator()
         {
             RuleFor(task => task.Name).NotEmpty();
-            RuleFor(task => task.Assignee).NotEmpty();
+            //RuleFor(task => task.Assignee).NotEmpty();
             RuleFor(task => task.Date).NotEmpty();
         }
     }

@@ -1,17 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
-using Application.Interfaces;
 using Application.Notifications;
-using Domain;
 using Domain.Repositories;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Tasks
 {
@@ -25,17 +18,13 @@ namespace Application.Tasks
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly ITaskRepository _taskRepository;
-            private readonly IUserRepository _userRepository;
             private readonly INotificationTokenRepository _notificationTokenRepository;
-            private readonly IUsernameAccessor _usernameAccessor;
             private readonly FirebaseNotificationService _notificationService;
 
-            public Handler(ITaskRepository taskRepository, IUserRepository userRepository, INotificationTokenRepository notificationTokenRepository, IUsernameAccessor usernameAccessor, FirebaseNotificationService notificationService)
+            public Handler(ITaskRepository taskRepository, INotificationTokenRepository notificationTokenRepository, FirebaseNotificationService notificationService)
             {
                 _taskRepository = taskRepository;
-                _userRepository = userRepository;
                 _notificationTokenRepository = notificationTokenRepository;
-                _usernameAccessor = usernameAccessor;
                 _notificationService = notificationService;
             }
 
@@ -49,36 +38,36 @@ namespace Application.Tasks
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                // get created by
-                var createdBy = await _userRepository.GetByUsername(_usernameAccessor.getUsername());
+                //// get created by
+                //var createdBy = await _userRepository.GetByUsername(_usernameAccessor.getUsername());
 
-                // get assignee
-                var assignee = await _userRepository.GetByUsername(request.Task.Assignee.UserName);
+                //// get assignee
+                //var assignee = await _userRepository.GetByUsername(request.Task.Assignee.UserName);
 
-                if (assignee == null) return null;
+                //if (assignee == null) return null;
 
-                request.Task.CreatedBy = createdBy;
-                request.Task.Assignee = assignee;
+                //request.Task.CreatedBy = createdBy;
+                //request.Task.Assignee = assignee;
 
-                // set DateCreated
-                request.Task.DateCreated = DateTime.Now;
+                //// set DateCreated
+                //request.Task.DateCreated = DateTime.Now;
 
-                request.Task.IsCompleted = false;
+                //request.Task.IsCompleted = false;
 
-                var result = _taskRepository.Add(request.Task);
+                //var result = _taskRepository.Add(request.Task);
 
-                if (!(result.Result > 0)) return Result<Unit>.Failure("Failed to create task");
+                //if (!(result.Result > 0)) return Result<Unit>.Failure("Failed to create task");
 
-                // Notify assignee
-                var regTokens = await _notificationTokenRepository.GetUserTokens(assignee);
-                if (regTokens.Any())
-                {
-                    await FirebaseNotificationService.CreateNotificationAsync(
-                        regTokens.ToList(),
-                        "Metask",
-                        $"You have a new task: {request.Task.Name}"
-                    );
-                }
+                //// Notify assignee
+                //var regTokens = await _notificationTokenRepository.GetUserTokens(assignee);
+                //if (regTokens.Any())
+                //{
+                //    await FirebaseNotificationService.CreateNotificationAsync(
+                //        regTokens.ToList(),
+                //        "Metask",
+                //        $"You have a new task: {request.Task.Name}"
+                //    );
+                //}
 
                 return Result<Unit>.Success(Unit.Value);
             }

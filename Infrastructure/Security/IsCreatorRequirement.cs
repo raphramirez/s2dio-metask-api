@@ -27,19 +27,19 @@ namespace Infrastructure.Security
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsCreatorRequirement requirement)
         {
-            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (userId == null) return Task.CompletedTask;
+            //if (userId == null) return Task.CompletedTask;
 
-            var taskId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value?.ToString());
+            //var taskId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value?.ToString());
 
-            var task = _context.Tasks
-                .AsNoTracking()
-                .SingleOrDefaultAsync(x => x.Id == taskId).Result;
+            //var task = _context.Tasks
+            //    .AsNoTracking()
+            //    .SingleOrDefaultAsync(x => x.Id == taskId).Result;
 
-            if (task == null) return Task.CompletedTask;
+            //if (task == null) return Task.CompletedTask;
 
-            if (task.CreatedById == userId) context.Succeed(requirement);
+            //if (task.CreatedById == userId) context.Succeed(requirement);
 
             return Task.CompletedTask;
 

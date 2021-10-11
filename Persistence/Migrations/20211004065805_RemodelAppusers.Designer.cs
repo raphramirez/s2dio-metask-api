@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
 namespace Persistence.Migrations
 {
     [DbContext(typeof(PlutoContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20211004065805_RemodelAppusers")]
+    partial class RemodelAppusers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,6 +65,9 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("AssigneeId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("CreatedById")
                         .HasColumnType("TEXT");
 
@@ -81,29 +86,13 @@ namespace Persistence.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("OrganizationId")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("AssigneeId");
 
                     b.HasIndex("CreatedById");
 
                     b.ToTable("Tasks");
-                });
-
-            modelBuilder.Entity("Domain.Entities.UserTask", b =>
-                {
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("TaskId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("AppUserId", "TaskId");
-
-                    b.HasIndex("TaskId");
-
-                    b.ToTable("UserTasks");
                 });
 
             modelBuilder.Entity("Domain.Entities.NotificationToken", b =>
@@ -117,42 +106,24 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Task", b =>
                 {
+                    b.HasOne("Domain.Entities.AppUser", "Assignee")
+                        .WithMany("Tasks")
+                        .HasForeignKey("AssigneeId");
+
                     b.HasOne("Domain.Entities.AppUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
+                    b.Navigation("Assignee");
+
                     b.Navigation("CreatedBy");
-                });
-
-            modelBuilder.Entity("Domain.Entities.UserTask", b =>
-                {
-                    b.HasOne("Domain.Entities.AppUser", "AppUser")
-                        .WithMany("UserTasks")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Task", "Task")
-                        .WithMany("UserTasks")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppUser");
-
-                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("Domain.Entities.AppUser", b =>
                 {
+                    b.Navigation("Tasks");
+
                     b.Navigation("Tokens");
-
-                    b.Navigation("UserTasks");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Task", b =>
-                {
-                    b.Navigation("UserTasks");
                 });
 #pragma warning restore 612, 618
         }
