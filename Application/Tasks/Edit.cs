@@ -59,7 +59,8 @@ namespace Application.Tasks
                 task.Description = request.Task.Description;
                 task.Date = request.Task.Date;
 
-                var changes = _taskRepository.Edit();
+                var changes = await _taskRepository.Edit();
+                if (!(changes > 0)) return Result<Unit>.Failure("Failed to edit task.");
 
                 return Result<Unit>.Success(Unit.Value);
             }
