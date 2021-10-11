@@ -31,14 +31,13 @@ namespace Application.Tasks
 
             public async Task<Result<List<TaskDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                //var tasks = await _taskRepository.GetByDate(
-                //    DateTime.Now,
-                //    t => t.Assignee,
-                //    t => t.CreatedBy
-                //);
+                var tasks = await _taskRepository.GetAll(
+                    inc => inc.UserTasks,
+                    inc => inc.CreatedBy
+                );
 
-                //var tasksToReturn = _mapper.Map<List<TaskDto>>(tasks);
-                return Result<List<TaskDto>>.Success(null);
+                var tasksToReturn = _mapper.Map<List<TaskDto>>(tasks);
+                return Result<List<TaskDto>>.Success(tasksToReturn);
             }
         }
     }

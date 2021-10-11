@@ -11,9 +11,11 @@ namespace Application.Tasks
         public string Name { get; set; }
         public string Description { get; set; }
         public Profiles.Profile CreatedBy { get; set; }
-        public Profiles.Profile Assignee { get; set; }
+        public string OrganizationId { get; set; }
         public DateTime Date { get; set; }
         public DateTime DateCreated { get; set; }
         public bool IsCompleted { get; set; }
+        public List<Profiles.Profile> Assignees { get; set; }
+
     }
 }
