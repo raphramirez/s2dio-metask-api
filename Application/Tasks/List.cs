@@ -32,8 +32,10 @@ namespace Application.Tasks
             public async Task<Result<List<TaskDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var tasks = await _taskRepository.GetAll(
-                    inc => inc.UserTasks,
-                    inc => inc.CreatedBy
+
+                    // Includes
+                    t => t.UserTasks,
+                    t => t.CreatedBy
                 );
 
                 var tasksToReturn = _mapper.Map<List<TaskDto>>(tasks);

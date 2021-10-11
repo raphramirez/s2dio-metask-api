@@ -27,12 +27,17 @@ namespace Application.Tasks
 
             public async Task<Result<TaskDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                //var task = await _taskRepository
-                //    .FirstOrDefault(task => task.Id == request.Id, t => t.Assignee, t => t.CreatedBy);
+                var task = await _taskRepository
+                    .FirstOrDefault(task => task.Id.Equals(request.Id),
 
-                //var taskToReturn = _mapper.Map<TaskDto>(task);
+                    // Includes
+                    t => t.CreatedBy,
+                    t => t.UserTasks
+                );
 
-                return Result<TaskDto>.Success(null);
+                var taskToReturn = _mapper.Map<TaskDto>(task);
+
+                return Result<TaskDto>.Success(taskToReturn);
             }
         }
     }

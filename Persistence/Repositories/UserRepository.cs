@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Persistence.Repositories.Base;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,11 @@ namespace Persistence.Repositories
         public UserRepository(PlutoContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<AppUser> FindByAuth0Id(string id)
+        {
+            return await _context.AppUsers.FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }
