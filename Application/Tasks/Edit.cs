@@ -1,6 +1,7 @@
 ﻿using Application.Core;
 using Application.Notifications;
 using AutoMapper;
+using Domain.Entities;
 using Domain.Repositories;
 using FluentValidation;
 using MediatR;
@@ -17,19 +18,21 @@ namespace Application.Tasks
     {
         public class Command : IRequest<Result<Unit>>
         {
-            public Domain.Entities.Task Task { get; set; }
+            public CreateTaskDto Task { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly PlutoContext _context;
             private readonly ITaskRepository _taskRepository;
+            private readonly IUserRepository _userRepository;
             private readonly IMapper _mapper;
             private readonly FirebaseNotificationService _notificationService;
 
-            public Handler(ITaskRepository taskRepository, IMapper mapper, FirebaseNotificationService notificationService)
+            public Handler(ITaskRepository taskRepository, IUserRepository userRepository, IMapper mapper, FirebaseNotificationService notificationService)
             {
                 _taskRepository = taskRepository;
+                _userRepository = userRepository;
                 _mapper = mapper;
                 _notificationService = notificationService;
             }
@@ -44,47 +47,19 @@ namespace Application.Tasks
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                //var task = await _taskRepository.FirstOrDefault(x => x.Id == request.Task.Id, x => x.Assignee);
+                var task = await _taskRepository.FirstOrDefault(x => x.Id == request.Task.Id,
+                    // includes
+                    x => x.UserTasks,
+                    x => x.CreatedBy
+                );
 
-                //if (task == null) return null;
+                if (task == null) return null;
 
-                //var oldAssignee = await _userRepository.FirstOrDefault(user => user.UserName == request.Task.Assignee.UserName);
+                task.Name = request.Task.Name;
+                task.Description = request.Task.Description;
+                task.Date = request.Task.Date;
 
-                //// get new assignee
-                //var assignee = await _userRepository.FirstOrDefault(user => user.UserName == request.Task.Assignee.UserName);
-                //if (assignee == null) return Result<Unit>.Failure("Assignee does not exists.");
-
-                //bool assigneeChanged = false;
-
-                //if (task.Assignee.UserName != assignee.UserName)
-                //{
-                //    assigneeChanged = true;
-                //    task.Assignee = request.Task.Assignee;
-                //}
-                //task.Name = request.Task.Name;
-                //task.Description = request.Task.Description;
-                //task.Date = request.Task.Date;
-
-                //var result = await _context.SaveChangesAsync() > 0;
-
-                //if (!result) return Result<Unit>.Failure("Failed to update task.");
-
-                //if (assigneeChanged)
-                //{
-                //    // Notify new assignee
-                //    var regTokens = await _context.NotificationTokens
-                //        .Where(x => x.AppUser.UserName == assignee.UserName)
-                //        .Select(t => t.Value)
-                //        .ToListAsync();
-                //    if (regTokens.Count > 0)
-                //    {
-                //        await FirebaseNotificationService.CreateNotificationAsync(
-                //            regTokens,
-                //            "Metask",
-                //            $"You have a new task: {task.Name}"
-                //        );
-                //    }
-                //}
+                var changes = _taskRepository.Edit();
 
                 return Result<Unit>.Success(Unit.Value);
             }

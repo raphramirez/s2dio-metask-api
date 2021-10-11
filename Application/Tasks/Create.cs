@@ -83,9 +83,9 @@ namespace Application.Tasks
                 newTask.Description = request.Task.Description;
                 newTask.IsCompleted = false;
 
-                var result = _taskRepository.Add(newTask);
+                var changes = await _taskRepository.Add(newTask);
 
-                if (!(result.Result > 0)) return Result<Unit>.Failure("Failed to create task");
+                if (!(changes > 0)) return Result<Unit>.Failure("Failed to create task.");
 
                 //// Notify assignee
                 //var regTokens = await _notificationTokenRepository.GetUserTokens(assignee);
