@@ -1,7 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
+using Application.Interfaces;
 using Application.Notifications;
+using Domain.Entities;
 using Domain.Repositories;
 using FluentValidation;
 using MediatR;
@@ -12,18 +18,22 @@ namespace Application.Tasks
     {
         public class Command : IRequest<Result<Unit>>
         {
-            public Domain.Entities.Task Task { get; set; }
+            public CreateTaskDto Task { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly ITaskRepository _taskRepository;
+            private readonly IUserRepository _userRepository;
+            private readonly IUserNameAccessor _userNameAccessor;
             private readonly INotificationTokenRepository _notificationTokenRepository;
             private readonly FirebaseNotificationService _notificationService;
 
-            public Handler(ITaskRepository taskRepository, INotificationTokenRepository notificationTokenRepository, FirebaseNotificationService notificationService)
+            public Handler(ITaskRepository taskRepository, IUserRepository userRepository, IUserNameAccessor userNameAccessor, INotificationTokenRepository notificationTokenRepository, FirebaseNotificationService notificationService)
             {
                 _taskRepository = taskRepository;
+                _userRepository = userRepository;
+                _userNameAccessor = userNameAccessor;
                 _notificationTokenRepository = notificationTokenRepository;
                 _notificationService = notificationService;
             }
@@ -38,25 +48,44 @@ namespace Application.Tasks
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                //// get created by
-                //var createdBy = await _userRepository.GetByUsername(_usernameAccessor.getUsername());
+                var newTask = new Domain.Entities.Task();
 
-                //// get assignee
-                //var assignee = await _userRepository.GetByUsername(request.Task.Assignee.UserName);
+                // get created by
+                var createdBy = await _userRepository.FindByAuth0Id(_userNameAccessor.getUserName());
+                if (createdBy == null) return null;
+                newTask.CreatedBy = createdBy;
 
-                //if (assignee == null) return null;
+                // get assignees
+                if (request.Task.Assignees.Any())
+                {
+                    var assigneeIds = new List<string>();
+                    foreach (var userTask in request.Task.Assignees)
+                    {
+                        assigneeIds.Add(userTask.Id);
+                    }
+                    var assignees = new List<UserTask>();
+                    foreach (var id in assigneeIds)
+                    {
+                        var foundUser = await _userRepository.FindByAuth0Id(id);
+                        assignees.Add(new UserTask
+                        {
+                            AppUser = foundUser
+                        });
+                    }
+                    newTask.UserTasks = assignees;
+                }
 
-                //request.Task.CreatedBy = createdBy;
-                //request.Task.Assignee = assignee;
+                // Info
+                newTask.Name = request.Task.Name;
+                newTask.DateCreated = DateTime.Now;
+                newTask.Date = request.Task.Date;
+                newTask.OrganizationId = request.Task.OrganizationId;
+                newTask.Description = request.Task.Description;
+                newTask.IsCompleted = false;
 
-                //// set DateCreated
-                //request.Task.DateCreated = DateTime.Now;
+                var result = _taskRepository.Add(newTask);
 
-                //request.Task.IsCompleted = false;
-
-                //var result = _taskRepository.Add(request.Task);
-
-                //if (!(result.Result > 0)) return Result<Unit>.Failure("Failed to create task");
+                if (!(result.Result > 0)) return Result<Unit>.Failure("Failed to create task");
 
                 //// Notify assignee
                 //var regTokens = await _notificationTokenRepository.GetUserTokens(assignee);

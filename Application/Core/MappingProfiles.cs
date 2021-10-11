@@ -17,11 +17,13 @@ namespace Application.Core
                 .ForMember(d => d.CreatedBy, s => s.MapFrom(x => x.CreatedBy));
 
             CreateMap<AppUser, Profiles.Profile>()
+                .ForMember(d => d.Id, s => s.MapFrom(x => x.Id))
                 .ForMember(d => d.Name, s => s.MapFrom(x => x.Name))
                 .ForMember(d => d.Email, s => s.MapFrom(x => x.Email))
                 .ForMember(d => d.Picture, s => s.MapFrom(x => x.Picture));
 
             CreateMap<UserTask, Profiles.Profile>()
+                .ForMember(d => d.Id, s => s.MapFrom(x => x.AppUser.Id))
                .ForMember(d => d.Name, s => s.MapFrom(x => x.AppUser.Name))
                .ForMember(d => d.Email, s => s.MapFrom(x => x.AppUser.Email))
                .ForMember(d => d.Picture, s => s.MapFrom(x => x.AppUser.Picture));

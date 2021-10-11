@@ -24,14 +24,14 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTask(Domain.Entities.Task task)
+        public async Task<IActionResult> CreateTask(CreateTaskDto task)
         {
             return HandleResult(await Mediator.Send(new Create.Command { Task = task }));
         }
 
         [Authorize(Policy = "IsCreator")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditTask(Guid id, Domain.Entities.Task task)
+        public async Task<IActionResult> EditTask(Guid id, CreateTaskDto task)
         {
             task.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command { Task = task }));
