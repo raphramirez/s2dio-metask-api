@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Domain.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -16,30 +17,28 @@ namespace Infrastructure.Security
     }
     public class IsCreatorRequirementHandler : AuthorizationHandler<IsCreatorRequirement>
     {
-        private readonly PlutoContext _context;
+        private readonly ITaskRepository _taskRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IsCreatorRequirementHandler(PlutoContext context, IHttpContextAccessor httpContextAccessor)
+        public IsCreatorRequirementHandler(ITaskRepository taskRepository, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _taskRepository = taskRepository;
             _httpContextAccessor = httpContextAccessor;
         }
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsCreatorRequirement requirement)
         {
-            //var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            //if (userId == null) return Task.CompletedTask;
+            if (userId == null) return Task.CompletedTask;
 
-            //var taskId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value?.ToString());
+            var taskId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value?.ToString());
 
-            //var task = _context.Tasks
-            //    .AsNoTracking()
-            //    .SingleOrDefaultAsync(x => x.Id == taskId).Result;
+            var task = _taskRepository.SingleOrDefault(x => x.Id == taskId).Result;
 
-            //if (task == null) return Task.CompletedTask;
+            if (task == null) return Task.CompletedTask;
 
-            //if (task.CreatedById == userId) context.Succeed(requirement);
+            if (task.CreatedById == userId) context.Succeed(requirement);
 
             return Task.CompletedTask;
 

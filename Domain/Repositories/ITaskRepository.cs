@@ -12,5 +12,6 @@ namespace Domain.Repositories
     {
         Task<IEnumerable<Entities.Task>> GetByDate(DateTime date, params Expression<Func<Entities.Task, object>>[] includes);
         Task<int> ToggleComplete(Entities.Task task);
+        Task<int> Edit();
     }
 }
