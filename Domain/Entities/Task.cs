@@ -14,6 +14,6 @@ namespace Domain.Entities
         public DateTime DateCreated { get; set; }
         public bool IsCompleted { get; set; }
         public string OrganizationId { get; set; }
-        public ICollection<UserTask> UserTasks { get; set; }
+        public ICollection<UserTask> UserTasks { get; set; } = new List<UserTask>();
     }
 }

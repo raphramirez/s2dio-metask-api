@@ -18,13 +18,11 @@ namespace Persistence.Repositories.Base
             Context = context;
         }
 
-        public async Task<TEntity> Get(Guid id, params Expression<Func<TEntity, object>>[] includes)
+        public async Task<TEntity> Get(Guid id)
         {
             var query = Context.Set<TEntity>();
 
-            return await includes
-                .Aggregate(query, (current, includeProperty) => (DbSet<TEntity>)current.Include(includeProperty))
-                .FindAsync(id);
+            return await query.FindAsync(id);
         }
 
         public async Task<IEnumerable<TEntity>> GetAll(params Expression<Func<TEntity, object>>[] includes)
