@@ -25,6 +25,10 @@ namespace Persistence.Repositories
 
         public async System.Threading.Tasks.Task<int> AddAssignee(Task task, AppUser user)
         {
+
+            if (task.UserTasks.Any(t => t.AppUserId == user.Id))
+                return await Context.SaveChangesAsync();
+
             task.UserTasks.Add(
                 new UserTask
                 {
@@ -36,9 +40,11 @@ namespace Persistence.Repositories
 
         public async System.Threading.Tasks.Task<int> RemoveAssignee(Task task, AppUser user)
         {
-            var userToRemove = task.UserTasks.FirstOrDefault(t => t.AppUserId == user.Id);
+            var userToRemove = task.UserTasks.FirstOrDefault(
+                t => t.AppUserId == user.Id);
 
-            task.UserTasks.Remove(userToRemove);
+            if (task.UserTasks.Any(t => t.AppUserId == user.Id))
+                task.UserTasks.Remove(userToRemove);
 
             return await Context.SaveChangesAsync();
         }
