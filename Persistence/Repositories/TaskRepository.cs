@@ -20,22 +20,6 @@ namespace Persistence.Repositories
 
         public async System.Threading.Tasks.Task<int> Edit()
         {
-            //task.Name = edittedTask.Name;
-            //task.Description = edittedTask.Description;
-            //task.Date = edittedTask.Date;
-
-            //// update assignees
-            //if (task.UserTasks != edittedTask.UserTasks)
-            //{
-            //    var assigneeIds = new List<string>();
-            //    foreach (var userTask in edittedTask.UserTasks)
-            //    {
-            //        assigneeIds.Add(userTask.AppUser.Id);
-            //    }
-
-            //    task.UserTasks = await GetAssignees(assigneeIds);
-            //}
-
             return await Context.SaveChangesAsync();
         }
 
@@ -64,9 +48,11 @@ namespace Persistence.Repositories
             throw new NotImplementedException();
         }
 
-        public System.Threading.Tasks.Task<int> ToggleComplete(Task task)
+        public async System.Threading.Tasks.Task<int> ToggleComplete(Task task)
         {
-            throw new NotImplementedException();
+            task.IsCompleted = !task.IsCompleted;
+
+            return await Context.SaveChangesAsync();
         }
 
         private async System.Threading.Tasks.Task<List<UserTask>> GetAssignees(List<string> assigneeIds)

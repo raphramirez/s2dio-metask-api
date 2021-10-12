@@ -28,17 +28,23 @@ namespace Infrastructure.Security
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsAssigneeRequirement requirement)
         {
-            //var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            //if (userId == null) return Task.CompletedTask;
+            if (userId == null) return Task.CompletedTask;
 
-            //var taskId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value?.ToString());
+            var taskId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value?.ToString());
 
-            //var task = _taskRepository.SingleOrDefault(t => t.Id == taskId).Result;
+            var task = _taskRepository.FirstOrDefault(t => t.Id == taskId,
+                // includes
+                t => t.UserTasks
+            ).Result;
 
-            //if (task == null) return Task.CompletedTask;
+            if (task == null) return Task.CompletedTask;
 
-            //if (task.AssigneeId == userId) context.Succeed(requirement);
+            foreach (var userTask in task.UserTasks)
+            {
+                if (userTask.AppUserId == userId) context.Succeed(requirement);
+            }
 
             return Task.CompletedTask;
         }
