@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
 using Application.Interfaces;
 using Application.Notifications;
-using Domain;
+using Domain.Entities;
 using Domain.Repositories;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Tasks
 {
@@ -19,23 +18,23 @@ namespace Application.Tasks
     {
         public class Command : IRequest<Result<Unit>>
         {
-            public Domain.Entities.Task Task { get; set; }
+            public CreateTaskDto Task { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly ITaskRepository _taskRepository;
             private readonly IUserRepository _userRepository;
+            private readonly IUserNameAccessor _userNameAccessor;
             private readonly INotificationTokenRepository _notificationTokenRepository;
-            private readonly IUsernameAccessor _usernameAccessor;
             private readonly FirebaseNotificationService _notificationService;
 
-            public Handler(ITaskRepository taskRepository, IUserRepository userRepository, INotificationTokenRepository notificationTokenRepository, IUsernameAccessor usernameAccessor, FirebaseNotificationService notificationService)
+            public Handler(ITaskRepository taskRepository, IUserRepository userRepository, IUserNameAccessor userNameAccessor, INotificationTokenRepository notificationTokenRepository, FirebaseNotificationService notificationService)
             {
                 _taskRepository = taskRepository;
                 _userRepository = userRepository;
+                _userNameAccessor = userNameAccessor;
                 _notificationTokenRepository = notificationTokenRepository;
-                _usernameAccessor = usernameAccessor;
                 _notificationService = notificationService;
             }
 
@@ -49,36 +48,55 @@ namespace Application.Tasks
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
+                var newTask = new Domain.Entities.Task();
+
                 // get created by
-                var createdBy = await _userRepository.GetByUsername(_usernameAccessor.getUsername());
+                var createdBy = await _userRepository.FindByAuth0Id(_userNameAccessor.getUserName());
+                if (createdBy == null) return null;
+                newTask.CreatedBy = createdBy;
 
-                // get assignee
-                var assignee = await _userRepository.GetByUsername(request.Task.Assignee.UserName);
-
-                if (assignee == null) return null;
-
-                request.Task.CreatedBy = createdBy;
-                request.Task.Assignee = assignee;
-
-                // set DateCreated
-                request.Task.DateCreated = DateTime.Now;
-
-                request.Task.IsCompleted = false;
-
-                var result = _taskRepository.Add(request.Task);
-
-                if (!(result.Result > 0)) return Result<Unit>.Failure("Failed to create task");
-
-                // Notify assignee
-                var regTokens = await _notificationTokenRepository.GetUserTokens(assignee);
-                if (regTokens.Any())
+                // get assignees
+                if (request.Task.Assignees.Any())
                 {
-                    await FirebaseNotificationService.CreateNotificationAsync(
-                        regTokens.ToList(),
-                        "Metask",
-                        $"You have a new task: {request.Task.Name}"
-                    );
+                    var assigneeIds = new List<string>();
+                    foreach (var userTask in request.Task.Assignees)
+                    {
+                        assigneeIds.Add(userTask.Id);
+                    }
+                    var assignees = new List<UserTask>();
+                    foreach (var id in assigneeIds)
+                    {
+                        var foundUser = await _userRepository.FindByAuth0Id(id);
+                        assignees.Add(new UserTask
+                        {
+                            AppUser = foundUser
+                        });
+                    }
+                    newTask.UserTasks = assignees;
                 }
+
+                // Info
+                newTask.Name = request.Task.Name;
+                newTask.DateCreated = DateTime.Now;
+                newTask.Date = request.Task.Date;
+                newTask.OrganizationId = request.Task.OrganizationId;
+                newTask.Description = request.Task.Description;
+                newTask.IsCompleted = false;
+
+                var changes = await _taskRepository.Add(newTask);
+
+                if (!(changes > 0)) return Result<Unit>.Failure("Failed to create task.");
+
+                //// Notify assignee
+                //var regTokens = await _notificationTokenRepository.GetUserTokens(assignee);
+                //if (regTokens.Any())
+                //{
+                //    await FirebaseNotificationService.CreateNotificationAsync(
+                //        regTokens.ToList(),
+                //        "Metask",
+                //        $"You have a new task: {request.Task.Name}"
+                //    );
+                //}
 
                 return Result<Unit>.Success(Unit.Value);
             }

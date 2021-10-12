@@ -18,7 +18,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationManager", "Noti
 		{CDEA4B35-D56F-4C5A-BB70-CA2F9C4D8377} = {CDEA4B35-D56F-4C5A-BB70-CA2F9C4D8377}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TasksManager", "TasksManager\TasksManager.csproj", "{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TasksManager", "TasksManager\TasksManager.csproj", "{46BDEB02-4558-4170-BE5D-BE0A6BB495D7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CDEA4B35-D56F-4C5A-BB70-CA2F9C4D8377} = {CDEA4B35-D56F-4C5A-BB70-CA2F9C4D8377}
 	EndProjectSection

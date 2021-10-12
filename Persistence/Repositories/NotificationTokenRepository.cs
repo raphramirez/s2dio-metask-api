@@ -19,12 +19,17 @@ namespace Persistence.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<string>> GetUserTokens(AppUser assignee)
+        public Task<IEnumerable<string>> GetUserTokens(AppUser assignee)
         {
-            return await _context.NotificationTokens
-                .Where(token => token.AppUser.UserName == assignee.UserName)
-                .Select(token => token.Value)
-                .ToListAsync();
+            throw new NotImplementedException();
         }
+
+        //public async Task<IEnumerable<string>> GetUserTokens(AppUser assignee)
+        //{
+        //    return await _context.NotificationTokens
+        //        .Where(token => token.AppUser.UserName == assignee.UserName)
+        //        .Select(token => token.Value)
+        //        .ToListAsync();
+        //}
     }
 }

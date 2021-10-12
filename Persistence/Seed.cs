@@ -9,95 +9,52 @@ namespace Persistence
 {
     public class Seed
     {
-        public static async System.Threading.Tasks.Task SeedData(PlutoContext context, UserManager<AppUser> userManager)
+        public static async System.Threading.Tasks.Task SeedData(PlutoContext context)
         {
-
-            string[] tasksNames =
+            // Register existing user
+            var users = new List<AppUser>();
+            if (!context.AppUsers.Any())
             {
-                "Dishwashing",
-                "Cleaning",
-                "CR",
-                "Trash",
-                "Kitchen",
-                "Coffee Cleaning",
-                "Rice Management",
-                "Stock Management",
-            };
-
-            if (!context.Tasks.Any() && !userManager.Users.Any())
-            {
-                var users = new List<AppUser>
-                {
+                users.Add(
                     new AppUser
                     {
-                        UserName = "elbert"
-                    },
-                    new AppUser
-                    {
-                        UserName = "russel"
-                    },
-                    new AppUser
-                    {
-                        UserName = "jhie"
-                    },
-                    new AppUser
-                    {
-                        UserName = "genesis"
-                    },
-                    new AppUser
-                    {
-                        UserName = "raph"
-                    },
-                    new AppUser
-                    {
-                        UserName = "hanz"
-                    },
-                    new AppUser
-                    {
-                        UserName = "jude"
-                    },
-                    new AppUser
-                    {
-                        UserName = "jade"
-                    },
-                };
-
-                foreach (var user in users)
-                {
-                    await userManager.CreateAsync(user, "Pa$$w0rd");
-                }
-
-                int daysInSept = DateTime.DaysInMonth(2021, 9);
-                var tasks = new List<Domain.Entities.Task>();
-
-                var userIndex = 0;
-
-                // Month of Sept
-                for (int day = 1; day <= daysInSept; day++)
-                {
-                    userIndex--;
-                    for (int i = 0; i < tasksNames.Length; i++)
-                    {
-                        if (userIndex < 0 || userIndex > users.Count - 1) userIndex = 0;
-
-                        tasks.Add(new Domain.Entities.Task
-                        {
-                            Name = tasksNames[i],
-                            Description = "Daily tasks.",
-                            Date = new DateTime(2021, 09, day, 8, 0, 0),
-                            CreatedBy = users[7],
-                            DateCreated = DateTime.Now,
-                            Assignee = users[userIndex],
-                            IsCompleted = false,
-                        });
-
-                        userIndex++;
-                    }
-                }
-
-                await context.Tasks.AddRangeAsync(tasks);
-                await context.SaveChangesAsync();
+                        Id = "google-oauth2|101066496962928054107",
+                        Name = "Ralph Ramirez",
+                        Email = "ralph@s2dioapps.com",
+                        Nickname = "ralph",
+                        Picture = "https://lh3.googleusercontent.com/a/AATXAJyleESGVT5rpdqkdAbDMdS-_icD7LQ9wezWnAfq=s96-c"
+                    });
             }
+
+            var tasks = new List<Domain.Entities.Task>();
+
+            if (!context.Tasks.Any())
+            {
+                // Get Dummy Tasks
+                tasks.Add(
+                    new Domain.Entities.Task
+                    {
+                        Name = "Dummy Task 1",
+                        Description = "Test description for a dummy task.",
+                        Date = DateTime.Now.AddDays(1),
+                        DateCreated = DateTime.Now,
+                        IsCompleted = false,
+                        OrganizationId = "org_gRkmgUcVrzZtjYdv",
+                        CreatedBy = users[0],
+                        UserTasks = new List<UserTask>
+                        {
+                        new UserTask
+                        {
+                            AppUser = users[0],
+                        }
+                        }
+                    }
+                );
+            }
+
+            await context.AppUsers.AddRangeAsync(users);
+            await context.Tasks.AddRangeAsync(tasks);
+            await context.SaveChangesAsync();
         }
     }
 }

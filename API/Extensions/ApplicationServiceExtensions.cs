@@ -11,31 +11,31 @@ using Persistence;
 
 namespace API.Extensions
 {
-  public static class ApplicationServiceExtensions
-  {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
+    public static class ApplicationServiceExtensions
     {
-      services.AddSwaggerGen(c =>
-      {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-      });
-
-      services.AddDbContext<PlutoContext>(opt =>
-      {
-        opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
-      });
-      services.AddCors(opt =>
-      {
-        opt.AddPolicy("CorsPolicy", policy =>
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
-          policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:8080");
-        });
-      });
-      services.AddMediatR(typeof(List.Handler).Assembly);
-      services.AddAutoMapper(typeof(MappingProfiles).Assembly);
-      services.AddScoped<IUsernameAccessor, UsernameAccessor>();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+            });
 
-      return services;
+            services.AddDbContext<PlutoContext>(opt =>
+            {
+                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+            });
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+          {
+              policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:8080");
+          });
+            });
+            services.AddMediatR(typeof(List.Handler).Assembly);
+            services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+            services.AddScoped<IUserNameAccessor, UserNameAccessor>();
+
+            return services;
+        }
     }
-  }
 }

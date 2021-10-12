@@ -35,7 +35,7 @@ namespace Application.Tasks
 
                 var changes = await _taskRepository.Remove(task);
 
-                if (changes > 0) return Result<Unit>.Failure("Faled to delete the task");
+                if (!(changes > 0)) return Result<Unit>.Failure("Faled to delete the task");
 
                 return Result<Unit>.Success(Unit.Value);
             }

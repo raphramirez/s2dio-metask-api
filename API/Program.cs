@@ -25,6 +25,7 @@ namespace API
                 var context = services.GetRequiredService<PlutoContext>();
 
                 await context.Database.MigrateAsync();
+                await Seed.SeedData(context);
             }
             catch (Exception e)
             {

@@ -17,20 +17,21 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "ReadAccess")]
         public async Task<IActionResult> GetTask(Guid id)
         {
             return HandleResult(await Mediator.Send(new Details.Query { Id = id }));
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTask(Domain.Entities.Task task)
+        public async Task<IActionResult> CreateTask(CreateTaskDto task)
         {
             return HandleResult(await Mediator.Send(new Create.Command { Task = task }));
         }
 
         [Authorize(Policy = "IsCreator")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditTask(Guid id, Domain.Entities.Task task)
+        public async Task<IActionResult> EditTask(Guid id, CreateTaskDto task)
         {
             task.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command { Task = task }));
@@ -41,6 +42,20 @@ namespace API.Controllers
         public async Task<IActionResult> DeleteTask(Guid id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command { Id = id }));
+        }
+
+        [Authorize(Policy = "IsCreator")]
+        [HttpPost("{id}/assign")]
+        public async Task<IActionResult> AddAssignee(Guid id, UserIdDto userIdDto)
+        {
+            return HandleResult(await Mediator.Send(new AddAssignee.Command { TaskId = id, UserId = userIdDto.UserId }));
+        }
+
+        [Authorize(Policy = "IsCreator")]
+        [HttpDelete("{id}/assign")]
+        public async Task<IActionResult> RemoveAssignee(Guid id, UserIdDto userIdDto)
+        {
+            return HandleResult(await Mediator.Send(new RemoveAssignee.Command { TaskId = id, UserId = userIdDto.UserId }));
         }
 
         [Authorize(Policy = "IsAssignee")]

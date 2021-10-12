@@ -18,36 +18,74 @@ namespace Persistence.Repositories
             _context = context;
         }
 
-        public async System.Threading.Tasks.Task<IEnumerable<Task>> GetByAssignee(AppUser assignee)
+        public async System.Threading.Tasks.Task<int> Edit()
         {
-            return await _context.Tasks
-                .Include(task => task.Assignee)
-                .Where(task => task.Assignee.UserName == assignee.UserName)
-                .ToListAsync();
+            //task.Name = edittedTask.Name;
+            //task.Description = edittedTask.Description;
+            //task.Date = edittedTask.Date;
+
+            //// update assignees
+            //if (task.UserTasks != edittedTask.UserTasks)
+            //{
+            //    var assigneeIds = new List<string>();
+            //    foreach (var userTask in edittedTask.UserTasks)
+            //    {
+            //        assigneeIds.Add(userTask.AppUser.Id);
+            //    }
+
+            //    task.UserTasks = await GetAssignees(assigneeIds);
+            //}
+
+            return await Context.SaveChangesAsync();
         }
 
-        public async System.Threading.Tasks.Task<IEnumerable<Task>> GetByCreator(AppUser creator)
+        public async System.Threading.Tasks.Task<int> AddAssignee(Task task, AppUser user)
         {
-            return await _context.Tasks
-                .Include(task => task.CreatedBy)
-                .Where(task => task.CreatedBy.UserName == creator.UserName)
-                .ToListAsync();
+            task.UserTasks.Add(
+                new UserTask
+                {
+                    AppUser = user
+                });
+
+            return await Context.SaveChangesAsync();
         }
 
-        public async System.Threading.Tasks.Task<IEnumerable<Task>> GetByDate(DateTime date, params Expression<Func<Task, object>>[] includes)
+        public async System.Threading.Tasks.Task<int> RemoveAssignee(Task task, AppUser user)
         {
-            var query = _context.Tasks
-                .OrderBy(t => t.Date)
-                .Where(t => t.Date >= date && t.Date < date.AddDays(1));
+            var userToRemove = task.UserTasks.FirstOrDefault(t => t.AppUserId == user.Id);
 
-            return await includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty)).ToListAsync();
+            task.UserTasks.Remove(userToRemove);
+
+            return await Context.SaveChangesAsync();
         }
 
-        public async System.Threading.Tasks.Task<int> ToggleComplete(Task task)
+        public System.Threading.Tasks.Task<IEnumerable<Task>> GetByDate(DateTime date, params Expression<Func<Task, object>>[] includes)
         {
-            task.IsCompleted = !task.IsCompleted;
+            throw new NotImplementedException();
+        }
 
-            return await _context.SaveChangesAsync();
+        public System.Threading.Tasks.Task<int> ToggleComplete(Task task)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async System.Threading.Tasks.Task<List<UserTask>> GetAssignees(List<string> assigneeIds)
+        {
+            if (assigneeIds.Any())
+            {
+                var assignees = new List<UserTask>();
+                foreach (var id in assigneeIds)
+                {
+                    var foundUser = await _context.AppUsers.FirstOrDefaultAsync(x => x.Id == id);
+                    assignees.Add(new UserTask
+                    {
+                        AppUser = foundUser
+                    });
+                }
+                return assignees;
+            }
+
+            return null;
         }
     }
 }
