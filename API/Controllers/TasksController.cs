@@ -44,6 +44,20 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Delete.Command { Id = id }));
         }
 
+        [Authorize(Policy = "IsCreator")]
+        [HttpPost("{id}/assign")]
+        public async Task<IActionResult> AddAssignee(Guid id, UserIdDto userIdDto)
+        {
+            return HandleResult(await Mediator.Send(new AddAssignee.Command { TaskId = id, UserId = userIdDto.UserId }));
+        }
+
+        [Authorize(Policy = "IsCreator")]
+        [HttpDelete("{id}/assign")]
+        public async Task<IActionResult> RemoveAssignee(Guid id, UserIdDto userIdDto)
+        {
+            return HandleResult(await Mediator.Send(new RemoveAssignee.Command { TaskId = id, UserId = userIdDto.UserId }));
+        }
+
         [Authorize(Policy = "IsAssignee")]
         [HttpPost("{id}/toggle")]
         public async Task<IActionResult> ToggleComplete(Guid id)

@@ -9,7 +9,7 @@ namespace Domain.Repositories.Base
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        Task<TEntity> Get(Guid id, params Expression<Func<TEntity, object>>[] includes);
+        Task<TEntity> Get(Guid id);
         Task<IEnumerable<TEntity>> GetAll(params Expression<Func<TEntity, object>>[] includes);
         IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
         Task<TEntity> SingleOrDefault(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);

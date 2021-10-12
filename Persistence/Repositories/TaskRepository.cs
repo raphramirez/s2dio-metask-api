@@ -39,6 +39,26 @@ namespace Persistence.Repositories
             return await Context.SaveChangesAsync();
         }
 
+        public async System.Threading.Tasks.Task<int> AddAssignee(Task task, AppUser user)
+        {
+            task.UserTasks.Add(
+                new UserTask
+                {
+                    AppUser = user
+                });
+
+            return await Context.SaveChangesAsync();
+        }
+
+        public async System.Threading.Tasks.Task<int> RemoveAssignee(Task task, AppUser user)
+        {
+            var userToRemove = task.UserTasks.FirstOrDefault(t => t.AppUserId == user.Id);
+
+            task.UserTasks.Remove(userToRemove);
+
+            return await Context.SaveChangesAsync();
+        }
+
         public System.Threading.Tasks.Task<IEnumerable<Task>> GetByDate(DateTime date, params Expression<Func<Task, object>>[] includes)
         {
             throw new NotImplementedException();
