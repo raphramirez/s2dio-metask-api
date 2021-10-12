@@ -43,11 +43,6 @@ namespace Persistence.Repositories
             return await Context.SaveChangesAsync();
         }
 
-        public System.Threading.Tasks.Task<IEnumerable<Task>> GetByDate(DateTime date, params Expression<Func<Task, object>>[] includes)
-        {
-            throw new NotImplementedException();
-        }
-
         public async System.Threading.Tasks.Task<int> ToggleComplete(Task task)
         {
             task.IsCompleted = !task.IsCompleted;
@@ -72,6 +67,20 @@ namespace Persistence.Repositories
             }
 
             return null;
+        }
+
+        public IEnumerable<Task> FilterByDate(DateTime date, IEnumerable<Task> tasks, params Expression<Func<Task, object>>[] includes)
+        {
+            tasks = tasks.Where(t => t.Date >= date && t.Date < date.AddDays(1));
+
+            return tasks;
+        }
+
+        public IEnumerable<Task> FilterByAssignee(AppUser assignee, IEnumerable<Task> tasks, params Expression<Func<Task, object>>[] includes)
+        {
+            tasks = tasks.Where(t => t.UserTasks.Any(ut => ut.AppUserId == assignee.Id));
+
+            return tasks;
         }
     }
 }
