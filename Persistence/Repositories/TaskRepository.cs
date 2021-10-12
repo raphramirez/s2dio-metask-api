@@ -20,22 +20,6 @@ namespace Persistence.Repositories
 
         public async System.Threading.Tasks.Task<int> Edit()
         {
-            //task.Name = edittedTask.Name;
-            //task.Description = edittedTask.Description;
-            //task.Date = edittedTask.Date;
-
-            //// update assignees
-            //if (task.UserTasks != edittedTask.UserTasks)
-            //{
-            //    var assigneeIds = new List<string>();
-            //    foreach (var userTask in edittedTask.UserTasks)
-            //    {
-            //        assigneeIds.Add(userTask.AppUser.Id);
-            //    }
-
-            //    task.UserTasks = await GetAssignees(assigneeIds);
-            //}
-
             return await Context.SaveChangesAsync();
         }
 
@@ -59,14 +43,11 @@ namespace Persistence.Repositories
             return await Context.SaveChangesAsync();
         }
 
-        public System.Threading.Tasks.Task<IEnumerable<Task>> GetByDate(DateTime date, params Expression<Func<Task, object>>[] includes)
+        public async System.Threading.Tasks.Task<int> ToggleComplete(Task task)
         {
-            throw new NotImplementedException();
-        }
+            task.IsCompleted = !task.IsCompleted;
 
-        public System.Threading.Tasks.Task<int> ToggleComplete(Task task)
-        {
-            throw new NotImplementedException();
+            return await Context.SaveChangesAsync();
         }
 
         private async System.Threading.Tasks.Task<List<UserTask>> GetAssignees(List<string> assigneeIds)
@@ -86,6 +67,20 @@ namespace Persistence.Repositories
             }
 
             return null;
+        }
+
+        public IEnumerable<Task> FilterByDate(DateTime date, IEnumerable<Task> tasks, params Expression<Func<Task, object>>[] includes)
+        {
+            tasks = tasks.Where(t => t.Date >= date && t.Date < date.AddDays(1));
+
+            return tasks;
+        }
+
+        public IEnumerable<Task> FilterByAssignee(AppUser assignee, IEnumerable<Task> tasks, params Expression<Func<Task, object>>[] includes)
+        {
+            tasks = tasks.Where(t => t.UserTasks.Any(ut => ut.AppUserId == assignee.Id));
+
+            return tasks;
         }
     }
 }
