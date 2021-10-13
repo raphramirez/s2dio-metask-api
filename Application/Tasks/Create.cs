@@ -59,13 +59,8 @@ namespace Application.Tasks
         // get assignees
         if (request.Task.Assignees.Any())
         {
-          var assigneeIds = new List<string>();
-          foreach (var userTask in request.Task.Assignees)
-          {
-            assigneeIds.Add(userTask.Id);
-          }
           var assignees = new List<UserTask>();
-          foreach (var id in assigneeIds)
+          foreach (var id in request.Task.Assignees)
           {
             var foundUser = await _userRepository.FindByAuth0Id(id);
             assignees.Add(new UserTask
@@ -87,16 +82,16 @@ namespace Application.Tasks
         var changes = await _taskRepository.Add(newTask);
 
         if (!(changes > 0)) return Result<Unit>.Failure(
-            new ApiErrorResponse
+          new ApiErrorResponse
+          {
+            Title = "One or more validation errors occured",
+            Instance = "/api/tasks",
+            Status = (int)HttpStatusCode.BadRequest,
+            Errors = new string[]
             {
-              Title = "Request failed.",
-              Instance = "/api/tasks",
-              Status = (int)HttpStatusCode.BadRequest,
-              Errors = new string[]
-              {
-                "Failed to create task."
-              }
+              "Failed to create task."
             }
+          }
         );
 
         //// Notify assignee
