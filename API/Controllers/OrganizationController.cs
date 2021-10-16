@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -16,7 +17,7 @@ namespace API.Controllers
 
         private HttpClient _client;
 
-        private readonly Uri AUTH0_BASE_ADDRESS = new Uri("https://dev-eb4zk63w.us.auth0.com/api/v2/");
+        private readonly Uri AUTH0_BASE_ADDRESS = new("https://dev-eb4zk63w.us.auth0.com/api/v2/");
 
         public OrganizationController()
         {
@@ -67,6 +68,98 @@ namespace API.Controllers
 
                     return NotFound();
                 };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet("{id}/members/{user_id}/roles")]
+        public async Task<ActionResult> GetMemberRoles([FromRoute] string id, [FromRoute] string user_id)
+        {
+            try
+            {
+                using (_client)
+                {
+                    HttpResponseMessage response = await _client.GetAsync($"organizations/{id}/members/{user_id}/roles");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var objResponse = response.Content.ReadAsStringAsync().Result;
+                        var roles = JsonConvert.DeserializeObject<List<MemberRolesDto>>(objResponse) ?? new List<MemberRolesDto>();
+                        return Ok(roles);
+                    }
+
+                    return NotFound();
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpPost("{id}/members/{user_id}/roles")]
+        public async Task<ActionResult> AssignRoles([FromRoute] string id, [FromRoute] string user_id, AssignRolesDto assignRolesDto)
+        {
+            try
+            {
+                using (_client)
+                {
+                    var objContent = new
+                    {
+                        roles = new List<string>
+                        {
+                            assignRolesDto.RoleId
+                        }
+                    };
+                    var content = new StringContent(JsonConvert.SerializeObject(objContent), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await _client.PostAsync($"organizations/{id}/members/{user_id}/roles", content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Ok();
+                    }
+
+                    return BadRequest();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpDelete("{id}/members/{user_id}/roles")]
+        public async Task<ActionResult> DeleteRoles([FromRoute] string id, [FromRoute] string user_id, AssignRolesDto assignRolesDto)
+        {
+            try
+            {
+                using (_client)
+                {
+                    var objContent = new
+                    {
+                        roles = new List<string>
+                        {
+                            assignRolesDto.RoleId
+                        }
+                    };
+
+                    var request = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Delete,
+                        RequestUri = new Uri(AUTH0_BASE_ADDRESS + $"organizations/{id}/members/{user_id}/roles"),
+                        Content = new StringContent(JsonConvert.SerializeObject(objContent), Encoding.UTF8, "application/json")
+                    };
+
+                    var response = await _client.SendAsync(request);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Ok();
+                    }
+
+                    return BadRequest();
+                }
             }
             catch (Exception)
             {
