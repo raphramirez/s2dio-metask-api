@@ -7,7 +7,6 @@ namespace API.DTOs
 {
     public class AssignRolesDto
     {
-        public string UserId { get; set; }
-        public List<string> Ids { get; set; } = new List<string>();
+        public string RoleId { get; set; }
     }
 }
