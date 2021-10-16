@@ -16,7 +16,7 @@ namespace API.Controllers
 
         private HttpClient _client;
 
-        private readonly Uri AUTH0_BASE_ADDRESS = new Uri("https://dev-eb4zk63w.us.auth0.com/api/v2/");
+        private readonly Uri AUTH0_BASE_ADDRESS = new("https://dev-eb4zk63w.us.auth0.com/api/v2/");
 
         public OrganizationController()
         {
@@ -63,6 +63,30 @@ namespace API.Controllers
                         var objResponse = response.Content.ReadAsStringAsync().Result;
                         var organization = JsonConvert.DeserializeObject<OrganizationDto>(objResponse);
                         return Ok(organization);
+                    }
+
+                    return NotFound();
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet("{id}/members/{user_id}/roles")]
+        public async Task<ActionResult> GetMemberRoles([FromRoute] string id, [FromRoute] string user_id)
+        {
+            try
+            {
+                using (_client)
+                {
+                    HttpResponseMessage response = await _client.GetAsync($"organizations/{id}/members/{user_id}/roles");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var objResponse = response.Content.ReadAsStringAsync().Result;
+                        var roles = JsonConvert.DeserializeObject<List<MemberRolesDto>>(objResponse) ?? new List<MemberRolesDto>();
+                        return Ok(roles);
                     }
 
                     return NotFound();
