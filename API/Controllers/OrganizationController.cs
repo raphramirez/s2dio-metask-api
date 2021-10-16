@@ -41,7 +41,7 @@ namespace API.Controllers
                         return Ok(membersList);
                     }
 
-                    return null;
+                    return NotFound();
                 };
             }
             catch (Exception)
@@ -65,7 +65,7 @@ namespace API.Controllers
                         return Ok(organization);
                     }
 
-                    return null;
+                    return NotFound();
                 };
             }
             catch (Exception)
