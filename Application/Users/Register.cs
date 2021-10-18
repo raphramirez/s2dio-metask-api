@@ -40,7 +40,6 @@ namespace Application.Users
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-
                 // create new appuser
                 var newUser = new AppUser
                 {
@@ -55,11 +54,10 @@ namespace Application.Users
                 // check if user already exists
                 var foundUser = _userRepository.FindByAuth0Id(newUser.Id).Result;
 
-                int changes;
                 if (foundUser == null)
                 {
                     // create new
-                    changes = await _userRepository.Add(newUser);
+                    await _userRepository.Add(newUser);
                 }
                 else
                 {
@@ -68,21 +66,21 @@ namespace Application.Users
                     foundUser.Nickname = request.User.Nickname;
                     foundUser.Email = request.User.Email;
                     foundUser.Picture = request.User.Picture;
-                    changes = await _userRepository.SaveChangesAsync();
+                    await _userRepository.SaveChangesAsync();
                 }
 
-                if (!(changes > 0)) return Result<Unit>.Failure(
-                      new ApiErrorResponse
-                      {
-                          Title = "Request failed.",
-                          Instance = "/api/tasks/{id}",
-                          Status = (int)HttpStatusCode.BadRequest,
-                          Errors = new string[]
-                        {
-                           "Failed to register user to database."
-                        }
-                      }
-                  );
+                //if (!(changes > 0)) return Result<Unit>.Failure(
+                //      new ApiErrorResponse
+                //      {
+                //          Title = "Request failed.",
+                //          Instance = "/api/tasks/{id}",
+                //          Status = (int)HttpStatusCode.BadRequest,
+                //          Errors = new string[]
+                //        {
+                //           "Failed to register user to database."
+                //        }
+                //      }
+                //  );
 
                 return Result<Unit>.Success(Unit.Value);
             }
