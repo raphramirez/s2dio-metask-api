@@ -18,12 +18,12 @@ namespace Application.Tasks
 {
     public class Edit
     {
-        public class Command : IRequest<Result<Unit>>
+        public class Command : IRequest<Result<string>>
         {
             public CreateTaskDto Task { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Result<Unit>>
+        public class Handler : IRequestHandler<Command, Result<string>>
         {
             private readonly PlutoContext _context;
             private readonly ITaskRepository _taskRepository;
@@ -47,7 +47,7 @@ namespace Application.Tasks
                 }
             }
 
-            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var task = await _taskRepository.FirstOrDefault(x => x.Id == request.Task.Id,
                     // includes
@@ -62,7 +62,7 @@ namespace Application.Tasks
                 task.Date = request.Task.Date;
 
                 var changes = await _taskRepository.Edit();
-                if (!(changes > 0)) return Result<Unit>.Failure(
+                if (!(changes > 0)) return Result<string>.Failure(
                     new ApiErrorResponse
                     {
                         Title = "Request failed.",
@@ -75,7 +75,7 @@ namespace Application.Tasks
                     }
                 );
 
-                return Result<Unit>.Success(Unit.Value);
+                return Result<string>.Success("Success");
             }
         }
     }
