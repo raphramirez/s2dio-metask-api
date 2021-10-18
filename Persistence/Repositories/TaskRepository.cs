@@ -77,7 +77,7 @@ namespace Persistence.Repositories
 
         public IEnumerable<Task> FilterByDate(DateTime date, IEnumerable<Task> tasks, params Expression<Func<Task, object>>[] includes)
         {
-            tasks = tasks.Where(t => t.Date >= date && t.Date < date.AddDays(1));
+            tasks = tasks.Where(t => t.Date >= date && t.Date < date.AddDays(1)).OrderBy(t => t.Date);
 
             return tasks;
         }
