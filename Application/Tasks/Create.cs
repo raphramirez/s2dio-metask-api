@@ -17,7 +17,7 @@ namespace Application.Tasks
 {
     public class Create
     {
-        public class Command : IRequest<Result<Unit>>
+        public class Command : IRequest<Result<string>>
         {
             public CreateTaskDto Task { get; set; }
         }
