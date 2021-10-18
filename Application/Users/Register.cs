@@ -16,12 +16,12 @@ namespace Application.Users
 {
     public class Register
     {
-        public class Command : IRequest<Result<Unit>>
+        public class Command : IRequest<Result<string>>
         {
             public RegisterUserDto User { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Result<Unit>>
+        public class Handler : IRequestHandler<Command, Result<string>>
         {
             private readonly IUserRepository _userRepository;
 
@@ -38,7 +38,7 @@ namespace Application.Users
                 }
             }
 
-            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
             {
                 // create new appuser
                 var newUser = new AppUser
@@ -69,20 +69,7 @@ namespace Application.Users
                     await _userRepository.SaveChangesAsync();
                 }
 
-                //if (!(changes > 0)) return Result<Unit>.Failure(
-                //      new ApiErrorResponse
-                //      {
-                //          Title = "Request failed.",
-                //          Instance = "/api/tasks/{id}",
-                //          Status = (int)HttpStatusCode.BadRequest,
-                //          Errors = new string[]
-                //        {
-                //           "Failed to register user to database."
-                //        }
-                //      }
-                //  );
-
-                return Result<Unit>.Success(Unit.Value);
+                return Result<string>.Success("Success");
             }
         }
     }

@@ -11,7 +11,6 @@ namespace API.Controllers
     public class AccountController : BaseApiController
     {
         [HttpPost("register")]
-        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterUserDto user)
         {
             return HandleResult(await Mediator.Send(new Register.Command { User = user }));
