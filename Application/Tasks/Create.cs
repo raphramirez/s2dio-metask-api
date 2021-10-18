@@ -22,7 +22,7 @@ namespace Application.Tasks
             public CreateTaskDto Task { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Result<Unit>>
+        public class Handler : IRequestHandler<Command, Result<string>>
         {
             private readonly ITaskRepository _taskRepository;
             private readonly IUserRepository _userRepository;
@@ -47,7 +47,7 @@ namespace Application.Tasks
                 }
             }
 
-            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var newTask = new Domain.Entities.Task();
 
@@ -85,7 +85,7 @@ namespace Application.Tasks
 
                 var changes = await _taskRepository.Add(newTask);
 
-                if (!(changes > 0)) return Result<Unit>.Failure(
+                if (!(changes > 0)) return Result<string>.Failure(
                   new ApiErrorResponse
                   {
                       Title = "One or more validation errors occured",
@@ -109,7 +109,7 @@ namespace Application.Tasks
                 //    );
                 //}
 
-                return Result<Unit>.Success(Unit.Value);
+                return Result<string>.Success("Success");
             }
         }
     }
