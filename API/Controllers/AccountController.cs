@@ -8,13 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-  public class AccountController : BaseApiController
-  {
-    [HttpPost("register")]
-    [AllowAnonymous]
-    public async Task<IActionResult> Register(RegisterUserDto user)
+    public class AccountController : BaseApiController
     {
-      return HandleResult(await Mediator.Send(new Register.Command { User = user }));
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterUserDto user)
+        {
+            return HandleResult(await Mediator.Send(new Register.Command { User = user }));
+        }
     }
-  }
 }

@@ -84,5 +84,10 @@ namespace Persistence.Repositories.Base
             Context.Set<TEntity>().RemoveRange(entities);
             return await Context.SaveChangesAsync();
         }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await Context.SaveChangesAsync();
+        }
     }
 }
