@@ -14,78 +14,78 @@ using MediatR;
 
 namespace Application.Users
 {
-  public class Register
-  {
-    public class Command : IRequest<Result<Unit>>
+    public class Register
     {
-      public RegisterUserDto User { get; set; }
-    }
-
-    public class Handler : IRequestHandler<Command, Result<Unit>>
-    {
-      private readonly IUserRepository _userRepository;
-
-      public Handler(IUserRepository userRepository)
-      {
-        _userRepository = userRepository;
-      }
-
-      public class CommandValidator : AbstractValidator<Command>
-      {
-        public CommandValidator()
+        public class Command : IRequest<Result<Unit>>
         {
-          RuleFor(x => x.User).SetValidator(new RegistrationValidator());
+            public RegisterUserDto User { get; set; }
         }
-      }
 
-      public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
-      {
-
-        // create new appuser
-        var newUser = new AppUser
+        public class Handler : IRequestHandler<Command, Result<Unit>>
         {
-          Id = request.User.Id,
-          Name = request.User.Name,
-          Nickname = request.User.Nickname,
-          Email = request.User.Email,
-          Picture = request.User.Picture,
-          UserTasks = new List<UserTask>(),
-        };
+            private readonly IUserRepository _userRepository;
 
-        // check if user already exists
-        var foundUser = _userRepository.FindByAuth0Id(newUser.Id).Result;
-        if (foundUser != null)
-        {
-          var apiErrorResponse = new ApiErrorResponse
-          {
-            Title = "One or more validation errors occured",
-            Instance = "/api/account/register",
-            Status = (int)HttpStatusCode.BadRequest,
-            Errors = new string[]
+            public Handler(IUserRepository userRepository)
             {
-              "Account already exists on the database."
+                _userRepository = userRepository;
             }
-          };
 
-          return Result<Unit>.Failure(apiErrorResponse);
-        }
-
-        var changes = await _userRepository.Add(newUser);
-        if (!(changes > 0)) return Result<Unit>.Failure(
-              new ApiErrorResponse
-              {
-                Title = "Request failed.",
-                Instance = "/api/tasks/{id}",
-                Status = (int)HttpStatusCode.BadRequest,
-                Errors = new string[]
+            public class CommandValidator : AbstractValidator<Command>
+            {
+                public CommandValidator()
                 {
-                "Failed to register user to database."
+                    RuleFor(x => x.User).SetValidator(new RegistrationValidator());
                 }
-              }
-          );
+            }
 
-        return Result<Unit>.Success(Unit.Value);
-      }
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
+            {
+
+                // create new appuser
+                var newUser = new AppUser
+                {
+                    Id = request.User.Id,
+                    Name = request.User.Name,
+                    Nickname = request.User.Nickname,
+                    Email = request.User.Email,
+                    Picture = request.User.Picture,
+                    UserTasks = new List<UserTask>(),
+                };
+
+                // check if user already exists
+                var foundUser = _userRepository.FindByAuth0Id(newUser.Id).Result;
+
+                int changes;
+                if (foundUser == null)
+                {
+                    // create new
+                    changes = await _userRepository.Add(newUser);
+                }
+                else
+                {
+                    // update user info
+                    foundUser.Name = request.User.Name;
+                    foundUser.Nickname = request.User.Nickname;
+                    foundUser.Email = request.User.Email;
+                    foundUser.Picture = request.User.Picture;
+                    changes = await _userRepository.SaveChangesAsync();
+                }
+
+                if (!(changes > 0)) return Result<Unit>.Failure(
+                      new ApiErrorResponse
+                      {
+                          Title = "Request failed.",
+                          Instance = "/api/tasks/{id}",
+                          Status = (int)HttpStatusCode.BadRequest,
+                          Errors = new string[]
+                        {
+                           "Failed to register user to database."
+                        }
+                      }
+                  );
+
+                return Result<Unit>.Success(Unit.Value);
+            }
+        }
     }
-  }
 }
