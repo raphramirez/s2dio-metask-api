@@ -18,5 +18,6 @@ namespace Domain.Repositories.Base
         Task<int> AddRange(IEnumerable<TEntity> entities);
         Task<int> Remove(TEntity entity);
         Task<int> RemoveRange(IEnumerable<TEntity> entities);
+        Task<int> SaveChangesAsync();
     }
 }

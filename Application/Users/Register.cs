@@ -40,7 +40,6 @@ namespace Application.Users
 
             public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
             {
-
                 // create new appuser
                 var newUser = new AppUser
                 {
@@ -54,35 +53,21 @@ namespace Application.Users
 
                 // check if user already exists
                 var foundUser = _userRepository.FindByAuth0Id(newUser.Id).Result;
-                if (foundUser != null)
+
+                if (foundUser == null)
                 {
-                    var apiErrorResponse = new ApiErrorResponse
-                    {
-                        Title = "One or more validation errors occured",
-                        Instance = "/api/account/register",
-                        Status = (int)HttpStatusCode.BadRequest,
-                        Errors = new string[]
-                      {
-              "Account already exists on the database."
-                      }
-                    };
-
-                    return Result<string>.Failure(apiErrorResponse);
+                    // create new
+                    await _userRepository.Add(newUser);
                 }
-
-                var changes = await _userRepository.Add(newUser);
-                if (!(changes > 0)) return Result<string>.Failure(
-                      new ApiErrorResponse
-                      {
-                          Title = "Request failed.",
-                          Instance = "/api/tasks/{id}",
-                          Status = (int)HttpStatusCode.BadRequest,
-                          Errors = new string[]
-                        {
-                "Failed to register user to database."
-                        }
-                      }
-                  );
+                else
+                {
+                    // update user info
+                    foundUser.Name = request.User.Name;
+                    foundUser.Nickname = request.User.Nickname;
+                    foundUser.Email = request.User.Email;
+                    foundUser.Picture = request.User.Picture;
+                    await _userRepository.SaveChangesAsync();
+                }
 
                 return Result<string>.Success("Success");
             }
