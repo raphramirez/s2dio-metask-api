@@ -1,4 +1,5 @@
 ﻿using API.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -102,6 +103,8 @@ namespace API.Controllers
         [HttpPost("{id}/members/{user_id}/roles")]
         public async Task<ActionResult> AssignRoles([FromRoute] string id, [FromRoute] string user_id, AssignRolesDto assignRolesDto)
         {
+            if (assignRolesDto.RoleId == null) return BadRequest("Role ID must not be empty.");
+
             try
             {
                 using (_client)
@@ -132,6 +135,8 @@ namespace API.Controllers
         [HttpDelete("{id}/members/{user_id}/roles")]
         public async Task<ActionResult> DeleteRoles([FromRoute] string id, [FromRoute] string user_id, AssignRolesDto assignRolesDto)
         {
+            if (assignRolesDto.RoleId == null) return BadRequest("Role ID must not be empty.");
+
             try
             {
                 using (_client)
@@ -148,6 +153,47 @@ namespace API.Controllers
                     {
                         Method = HttpMethod.Delete,
                         RequestUri = new Uri(AUTH0_BASE_ADDRESS + $"organizations/{id}/members/{user_id}/roles"),
+                        Content = new StringContent(JsonConvert.SerializeObject(objContent), Encoding.UTF8, "application/json")
+                    };
+
+                    var response = await _client.SendAsync(request);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Ok();
+                    }
+
+                    return BadRequest();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpDelete("{id}/members")]
+        [Authorize(Policy = "ManageOrganizationAccess")]
+        public async Task<ActionResult> KickMember([FromRoute] string id, KickMemberDto kickMemberDto)
+        {
+            if (kickMemberDto.UserId == null) return BadRequest();
+
+            try
+            {
+                using (_client)
+                {
+                    var objContent = new
+                    {
+                        members = new List<string>
+                        {
+                            kickMemberDto.UserId
+                        }
+                    };
+
+                    var request = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Delete,
+                        RequestUri = new Uri(AUTH0_BASE_ADDRESS + $"organizations/{id}/members"),
                         Content = new StringContent(JsonConvert.SerializeObject(objContent), Encoding.UTF8, "application/json")
                     };
 
